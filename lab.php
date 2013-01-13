@@ -45,9 +45,9 @@
 	/**
 	 *
 	 */
-	function assert($value)
+	function assert($value, $raw = FALSE)
 	{
-		return new Assert($value);
+		return new Assert($value, $raw);
 	}
 
 

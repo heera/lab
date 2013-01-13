@@ -17,22 +17,24 @@
 		/**
 		 *
 		 */
-		public function __construct($value)
+		public function __construct($value, $raw = FALSE)
 		{
 			$this->value = $value;
 			$this->type  = gettype($value);
 
-			switch ($this->type) {
-				case 'string':
-					$this->loadString($value);
-					break;
+			if (!$raw) {
+				switch ($this->type) {
+					case 'string':
+						$this->loadString($value);
+						break;
 
-				default:
-					throw new \Exception(sprintf(
-						'Cannot assert type %s, not supported',
-						$this->type
-					));
+					default:
+						throw new \Exception(sprintf(
+							'Cannot assert type %s, not supported',
+							$this->type
+						));
 
+				}
 			}
 		}
 

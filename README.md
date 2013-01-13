@@ -54,7 +54,7 @@ mkdir ../tests
 
 Let's create a simple example fixture simply called `Fixture`.  Open up a text editor and paste in the following:
 
-```
+```php
 <?php namespace Dotink\Lab {
 
 	use Dotink\Parody;
@@ -158,7 +158,7 @@ Now we can rerun `php lab.php`
 
 Using the `with()` method above, we were able to define the arguments that would be passed to the method we were testing.  For non-static methods we need to also include the `using()` method and pass in the object we want to run the method on.  Let's see that in action with one more test, add:
 
-```
+```php
 'bailOnEmpty()' => function() {
 	$foo = new Foo();
 

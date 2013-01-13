@@ -180,6 +180,9 @@
 
 			} elseif (function_exists($value)) {
 				$this->isFunction = TRUE;
+				$this->call       = function($args) use ($value) {
+					return call_user_func_array($value, $args);
+				};
 
 			} else {
 				$this->isString = TRUE;

@@ -1,0 +1,3 @@
+[submodule "library/parody"]
+	path = library/parody
+	url = https://github.com/dotink/Parody.git

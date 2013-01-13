@@ -1,0 +1,36 @@
+<?php namespace Dotink\Lab {
+
+	return [
+
+		//
+		// This defines a relative or absolute path to our tests directory
+		// containing our "fixtures".
+		//
+
+		'tests_directory' => 'tests',
+
+		//
+		// The global 'setup' key can contain a closure to run logic
+		// required to run at the beginning of every fixture.
+		//
+
+		'setup' => function($config) {
+		},
+
+		//
+		// The global 'cleanup' key can contain a closure to run logic
+		// required to run at the end of every fixture.
+		//
+
+		'cleanup' => function($config) {
+		},
+
+		//
+		// Arbitrary values can be specified, all 'setup' and 'cleanup'
+		// functions (global) and per fixture are given the $config
+		// array as a first parameter to use these values.
+		//
+
+		'app_root' => realpath(__DIR__ . DS . '../..')
+	];
+}

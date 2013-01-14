@@ -59,7 +59,14 @@
 	function get_config()
 	{
 		try {
-			return needs(__DIR__ . DS . 'lab.config');
+			for (
+				$config_path = 'lab.config';
+				!is_readable(__DIR__ . DS . $config_path);
+				$config_path = '..' . DS . $config_path
+			);
+
+			return needs(realpath(__DIR__ . DS . $config_path));
+
 		} catch (\Exception $e) {
 			echo _('Config Failed: ', 'red');
 			echo $e->getMessage() . LB;

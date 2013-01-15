@@ -47,7 +47,7 @@
 	 */
 	function assert($value, $raw = FALSE)
 	{
-		return new Assert($value, $raw);
+		return new Assertion($value, $raw);
 	}
 
 
@@ -131,6 +131,13 @@
 	 * @return void
 	 */
 	call_user_func(function() use($argv) {
+
+		$config         = get_config();
+		$test_directory = !preg_match(REGEX_ABSOLUTE_PATH, $config['tests_directory'])
+			? realpath(__DIR__ . DS . $config['tests_directory'])
+			: $config['tests_directory'];
+
+
 		if (!isset($argv[1])) {
 
 			$banner = (
@@ -142,11 +149,6 @@
 			);
 
 			echo _($banner, 'dark_gray') . LB . LB;
-
-			$config         = get_config();
-			$test_directory = !preg_match(REGEX_ABSOLUTE_PATH, $config['tests_directory'])
-				? realpath(__DIR__ . DS . $config['tests_directory'])
-				: $config['tests_directory'];
 
 			$fixtures = add_tests($test_directory);
 
@@ -166,7 +168,8 @@
 
 		$config   = get_config();
 		$fixture  = require($argv[1]);
-		$headline = sprintf('Running %s', pathinfo($argv[1], PATHINFO_FILENAME));
+		$file     = str_replace($test_directory . DS, '', $argv[1]);
+		$headline = sprintf('Running %s', pathinfo($file, PATHINFO_FILENAME));
 		$errors   = array();
 
 		set_error_handler(function($number, $string, $file, $line, $context) use (&$errors) {

@@ -1,7 +1,7 @@
 <?php namespace Dotink\Lab {
 
 	include(__DIR__ . '/library/parody/Load.php');
-	include(__DIR__ . '/library/Assert.php');
+	include(__DIR__ . '/library/Assertion.php');
 
 	use Dotink\Parody;
 

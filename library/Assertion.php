@@ -194,7 +194,32 @@
 		 */
 		public function contains($value)
 		{
+			$result  = $this->resolve();
+			$values  = func_get_args();
+			$missing = array();
 
+			if (is_array($result) || (is_object($result) && $result instanceof \ArrayAccess)) {
+				foreach ($values as $value) {
+					if (array_search($value, $result) === FALSE) {
+						$missing[] = $value;
+					}
+				}
+
+				if (count($missing)) {
+					throw new \Exception(sprintf(
+						'Assertion failed, %d of the values could not be found in result %s',
+						count($missing),
+						$this->formatValue($result)
+					));
+				}
+
+				return $this;
+			}
+
+			throw new \Exception(sprintf(
+				'Cannot use contains() on assertion of type "%s"',
+				gettype($result)
+			));
 		}
 
 

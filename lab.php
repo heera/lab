@@ -9,6 +9,16 @@
 	const LB                  = \PHP_EOL;
 	const TAB                 = "\t";
 
+	const GT  = '>';
+	const LT  = '<';
+	const GTE = '>=';
+	const LTE = '<=';
+
+	const EVEN = 1;
+	const ODD  = 0;
+
+	const EXACTLY = TRUE;
+
 	const REGEX_ABSOLUTE_PATH = '#^(/|\\\\|[a-z]:(\\\\|/)|\\\\|//)#i';
 
 	/**
@@ -176,10 +186,10 @@
 			$type = 'Unknown(' . $number . ')';
 
 			switch ($number) {
-				case E_ERROR:   $type = 'E_ERROR'; break;
+				case E_ERROR:   $type = 'E_ERROR';   break;
 				case E_WARNING: $type = 'E_WARNING'; break;
-				case E_NOTICE:  $type = 'E_NOTICE'; break;
-				case E_STRICT:  $type = 'E_STRICT'; break;
+				case E_NOTICE:  $type = 'E_NOTICE';  break;
+				case E_STRICT:  $type = 'E_STRICT';  break;
 			}
 
 			$errors[] = sprintf(

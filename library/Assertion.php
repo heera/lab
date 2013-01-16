@@ -26,30 +26,12 @@
 
 
 		/**
-		 * Whether not the assertion is accessible as an array
-		 *
-		 * @access private
-		 * @var boolean
-		 */
-		private $isArrayAccessible = FALSE;
-
-
-		/**
 		 * Whether not the assertion is a Class
 		 *
 		 * @access private
 		 * @var boolean
 		 */
 		private $isClass = FALSE;
-
-
-		/**
-		 * Whether not the assertion is countable
-		 *
-		 * @access private
-		 * @var boolean
-		 */
-		private $isCountable = FALSE;
 
 
 		/**
@@ -122,15 +104,6 @@
 		 * @var boolean
 		 */
 		private $isString = FALSE;
-
-
-		/**
-		 * Whether not the assertion is traversable
-		 *
-		 * @access private
-		 * @var boolean
-		 */
-		private $isTraversable = FALSE;
 
 
 		/**
@@ -212,74 +185,241 @@
 
 
 		/**
-		 * Asserts that the original value "has" a given value
+		 * Asserts that one or more values is contained in the result
 		 *
 		 * @access public
-		 * @param mixed $value The value
-		 * @return void
-		 */
-		public function has($value)
-		{
-			$result = $this->resolve();
-
-			if (is_array($result) || (is_object($result) && $result instanceof \ArrayAccess)) {
-				if (!isset($result[$value])) {
-					throw new \Exception(sprintf(
-						'Assertion failed, %s does not contain %s',
-						$this->makeValue($this->value),
-						$this->makeValue($value)
-					));
-				}
-
-			}
-
-			throw new \Exception(sprintf(
-				'Cannot use has() on assertion which resolves to type %s',
-				gettype($result)
-			));
-		}
-
-
-		/**
-		 * Asserts that a value is contained in the original value
-		 *
-		 * @access public
-		 * @param mixed $value The value
-		 * @return void
+		 * @param mixed $value A value to check for in the result
+		 * @param ...
+		 * @return Assertion The original assertion for method chaining
 		 */
 		public function contains($value)
 		{
+
+		}
+
+
+		/**
+		 * Asserts that the result begins with a certain value
+		 *
+		 * @access public
+		 * @param mixed $beginning A value equal to the beginning
+		 * @return Assertion The original assertion for method chaining
+		 */
+		public function begins($beginning)
+		{
 			$result = $this->resolve();
 
-			if (is_array($result) && array_search($result) !== FALSE) {
+			if (is_string($result)) {
+				$encoding           = mb_detect_encoding($result . 'e', 'UTF-8, ISO-8859-1');
+				$beginning_encoding = mb_detect_encoding($result . 'e', 'UTF-8, ISO-8859-1');
 
+				if ($encoding != $beginning_encoding) {
+					$encoding = $beginning_encoding;
+				}
+
+				$size   = mb_strlen($result, $encoding);
+				$length = mb_strlen($beginning, $encoding);
+
+				if ($size >= $length) {
+					if ($beginning != mb_substr($result, 0, $length)) {
+						throw new \Exception(sprintf(
+							'Assertion failed, result %s does not begin with %s',
+							$this->formatValue($result),
+							$this->formatValue($beginning)
+						));
+					}
+
+					return $this;
+				}
+
+				throw new \Exception(sprintf(
+					'Assertion failed, result %s is not long enough to begin with %s',
+					$this->formatValue($result),
+					$this->formatValue($beginning)
+				));
 			}
 
 			throw new \Exception(sprintf(
-				'Cannot use contains() on assertion which resolves to type %s',
+				'Cannot use begins() on assertion of type "%s"',
 				gettype($result)
 			));
 		}
 
 
 		/**
-		 * Asserts that a value is equal to the original value
+		 * Asserts that the result ends with a certain value
 		 *
 		 * @access public
-		 * @param mixed $value The value
-		 * @return void
+		 * @param mixed $end A value equal to the ending
+		 * @return Assertion The original assertion for method chaining
 		 */
-		public function equals($value)
+		public function ends($end)
 		{
 			$result = $this->resolve();
 
-			if ($result != $value) {
+			if (is_string($result)) {
+				$encoding     = mb_detect_encoding($result . 'e', 'UTF-8, ISO-8859-1');
+				$end_encoding = mb_detect_encoding($result . 'e', 'UTF-8, ISO-8859-1');
+
+				if ($encoding != $end_encoding) {
+					$encoding = $end_encoding;
+				}
+
+				$length = mb_strlen($result, $encoding);
+				$start  = mb_strlen($end, $encoding);
+
+				if ($length >= $start) {
+					if ($end != mb_substr($result, $length - $start)) {
+						throw new \Exception(sprintf(
+							'Assertion failed, result %s does not end with %s',
+							$this->formatValue($result),
+							$this->formatValue($end)
+						));
+					}
+
+					return $this;
+				}
+
 				throw new \Exception(sprintf(
-					'Assertion failed, expected %s but got %s',
-					$this->makeValue($value),
-					$this->makeValue($result)
+					'Assertion failed, result %s is not long enough to end with %s',
+					$this->formatValue($result),
+					$this->formatValue($end)
 				));
 			}
+
+			throw new \Exception(sprintf(
+				'Cannot use ends() on assertion of type "%s"',
+				gettype($result)
+			));
+		}
+
+
+		/**
+		 * Asserts that the result is equal to a value
+		 *
+		 * @access public
+		 * @param mixed $value The value to check for equality
+		 * @param boolean $exactly Whether or not the comparision should be exact
+		 * @return Assertion The original assertion for method chaining
+		 */
+		public function equals($value, $exactly = FALSE)
+		{
+			$result    = $this->resolve();
+			$condition = $exactly ? ($result === $value) : ($result == $value);
+
+			if ($condition) {
+				return $this;
+			}
+
+			throw new \Exception(sprintf(
+				'Assertion failed, expected %s%s but got %s',
+				$this->formatValue($value),
+				$exactly ? ' (exactly)' : NULL,
+				$this->formatValue($result)
+			));
+		}
+
+
+		/**
+		 * Asserts that the result has a given key or keys
+		 *
+		 * @access public
+		 * @param mixed $key A key to check for
+		 * @param ...
+		 * @return Assertion The original assertion for method chaining
+		 */
+		public function has($key)
+		{
+			$result  = $this->resolve();
+			$keys    = func_get_args();
+			$missing = array();
+
+			if (is_array($result) || (is_object($result) && $result instanceof \ArrayAccess)) {
+				foreach ($keys as $key) {
+					if (!(is_string($key) || is_int($key))) {
+						throw new \Exception(sprintf(
+							'Assertion failed, invalid key %s provided to has()',
+							$this->formatValue($key)
+						));
+					}
+
+					if (!array_key_exists($key, $result)) {
+						$missing[] = $key;
+					}
+				}
+
+				if ($num_missing = count($missing)) {
+					throw new \Exception(sprintf(
+						'Assertion failed, value %s is missing %s out of %s keys',
+						$this->formatValue($result),
+						$num_missing,
+						count($keys)
+					));
+				}
+
+				return $this;
+			}
+
+			throw new \Exception(sprintf(
+				'Cannot use has() on assertion of non-array-accessible type "%s"',
+				gettype($result)
+			));
+		}
+
+
+		/**
+		 * Asserts that the length/size of the result measures to a certain number
+		 *
+		 * @access public
+		 * @param string $condition An optional condition: GT, LT, GTE, LTE
+		 * @param int $size The size to compare to
+		 * @return Assertion The original assertion for method chaining
+		 */
+		public function measures($size)
+		{
+			$result   = $this->resolve();
+			$length   = NULL;
+			$modifier = NULL;
+
+			if (func_num_args() == 2) {
+				$modifier = func_get_arg(0);
+				$size     = func_get_arg(1);
+			}
+
+
+			if (is_array($result) || (is_object($result) && $result instanceof \Countable)) {
+				$length = count($result);
+			} elseif (is_string($result)) {
+				$encoding = mb_detect_encoding($result . 'e', 'UTF-8, ISO-8859-1, ASCII');
+				$length   = mb_strlen($result, $encoding);
+			}
+
+			if (isset($length)) {
+				switch ($modifier) {
+					case GT:  $condition = $length >  $size; break;
+					case LT:  $condition = $length <  $size; break;
+					case GTE: $condition = $length >= $size; break;
+					case LTE: $condition = $length <= $size; break;
+					default:  $condition = $length == $size; break;
+				}
+
+				if (!$condition) {
+					throw new \Exception(sprintf(
+						'Assertion failed, value %s measures %d instead of %s%d',
+						$this->formatValue($result),
+						$length,
+						$modifier ? ($modifier . ' ') : NULL,
+						$size
+					));
+				}
+
+				return $this;
+			}
+
+			throw new \Exception(sprintf(
+				'Cannot use measures() on non countable or sizeable assertion of type "%s"',
+				gettype($result)
+			));
 		}
 
 
@@ -288,14 +428,14 @@
 		 *
 		 * @access public
 		 * @param string $class The exception class to test for
-		 * @return void
+		 * @return Assertion The original assertion for method chaining
 		 */
 		public function throws($class)
 		{
 			if (!($this->isMethod || $this->isFunction || $this->isClosure)) {
 				throw new \Exception(sprintf(
 					'Cannot assert that non-callable value %s throws an exception',
-					$this->makeValue($this->value)
+					$this->formatValue($this->value)
 				));
 			}
 
@@ -306,7 +446,7 @@
 				$exception_class = get_class($e);
 
 				if ($exception_class == $class) {
-					return;
+					return $this;
 				} else {
 					throw new \Exception(sprintf(
 						'Assertion failed, callable %s threw exception of type %s instead of %s',
@@ -320,7 +460,7 @@
 			throw new \Exception(sprintf(
 				'Assertion failed, callable %s returned %s instead of throwing exception %s',
 				$this->value,
-				$this->makeValue($result),
+				$this->formatValue($result),
 				$class
 			));
 		}
@@ -337,15 +477,15 @@
 		{
 			if (!$this->needsObject) {
 				throw new \Exception(sprintf(
-					'Cannot assert using() on static %s',
-					$this->makeValue($this->value)
+					'Cannot assert using() on static "%s"',
+					$this->value
 				));
 
 			} elseif (!is_object($object)) {
 				throw new \Exception(sprintf(
 					'Cannot assert "%s" using() non-object %s',
 					$this->value,
-					$this->makeValue($object)
+					$this->formatValue($object)
 				));
 
 			} elseif (get_class($object) != $this->class) {
@@ -375,7 +515,7 @@
 			if (!($this->isMethod || $this->isFunction || $this->isClosure)) {
 				throw new \Exception(sprintf(
 					'Cannot assert with() on non-callable %s',
-					$this->makeValue($this->value)
+					$this->formatValue($this->value)
 				));
 			}
 
@@ -426,8 +566,6 @@
 		private function loadArray()
 		{
 			$this->isArray           = TRUE;
-			$this->isArrayAccessible = TRUE;
-			$this->isCountable       = TRUE;
 		}
 
 
@@ -502,26 +640,20 @@
 			$this->isObject = TRUE;
 			$this->class    = get_class($this->value);
 			$this->object   = $this->value;
-
-			if ($this->value instanceof \ArrayAccess) {
-				$this->isArrayAccessible = TRUE;
-			}
-
-			if ($this->value instanceof \Countable) {
-				$this->isCountable = TRUE;
-			}
 		}
 
 
 		/**
-		 * Prints a value somewhat neatly depending on type
+		 * Formats a value somewhat neatly (depending on type) into a printable string
 		 *
 		 * @access private
-		 * @param mixed $value The value to print
-		 * @return string A nice string represenation of the original value
+		 * @param mixed $value The value to format
+		 * @return string A hopefully nice string represenation of the original value
 		 */
-		private function makeValue($value)
+		private function formatValue($value)
 		{
+			$detail = NULL;
+
 			switch($type = gettype($value)) {
 				case 'object':
 					$value = get_class($value);
@@ -546,7 +678,12 @@
 					break;
 			}
 
-			return ($type ? '[' . $type . ']' : '') . '(' . $value . ')';
+			return ($type ? '[' . $type . ']' : '')           // A type if available (not on NULL)
+				   . '('
+				   .     $value                               // The easy representation of a value
+				   .     ($detail ? (' : ' . $detail) : NULL) // Available detail
+				   . ')';
+
 		}
 
 

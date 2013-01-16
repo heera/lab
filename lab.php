@@ -10,7 +10,7 @@
 	const TAB                 = "\t";
 
 	//
-	// Constants for comparisons
+	// Some comparison constants
 	//
 
 	const GT  = '>';

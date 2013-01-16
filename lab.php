@@ -9,6 +9,10 @@
 	const LB                  = \PHP_EOL;
 	const TAB                 = "\t";
 
+	//
+	// Constants for comparisons
+	//
+
 	const GT  = '>';
 	const LT  = '<';
 	const GTE = '>=';

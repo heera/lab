@@ -1,16 +1,15 @@
 <?php namespace Dotink\Lab {
 
-	include(__DIR__ . '/library/parody/Load.php');
-	include(__DIR__ . '/library/Assertion.php');
+	//
+	// Useful shorthand constants
+	//
 
-	use Dotink\Parody;
-
-	const DS                  = \DIRECTORY_SEPARATOR;
-	const LB                  = \PHP_EOL;
-	const TAB                 = "\t";
+	const DS  = \DIRECTORY_SEPARATOR;
+	const LB  = \PHP_EOL;
+	const TAB = "\t";
 
 	//
-	// Constants for comparisons
+	// Constants for comparisons operations
 	//
 
 	const GT  = '>';
@@ -18,12 +17,93 @@
 	const GTE = '>=';
 	const LTE = '<=';
 
-	const EVEN = 1;
-	const ODD  = 0;
+	//
+	// Constants for conditional operations
+	//
 
+	const EVEN    = 1;
+	const ODD     = 0;
 	const EXACTLY = TRUE;
 
+	//
+	// Support Constants for built-in functionality
+	//
+
 	const REGEX_ABSOLUTE_PATH = '#^(/|\\\\|[a-z]:(\\\\|/)|\\\\|//)#i';
+
+	//
+	// Print our our label if we're the parent
+	//
+
+	if (!isset($argv[1])) {
+		ini_set('display_errors', 0);
+		ini_set('display_startup_errors', 0);
+
+		$banner = (
+			' _        _    ____          _   ___  ' . LB .
+			'| |      / \  | __ )  __   _/ | / _ \ ' . LB .
+			'| |     / _ \ |  _ \  \ \ / / || | | |' . LB .
+			'| |___ / ___ \| |_) |  \ V /| || |_| |' . LB .
+			'|_____/_/   \_\____/    \_/ |_(_)___/  By: Dotink'
+		);
+
+		echo LB;
+		echo _($banner, 'dark_gray') . LB;
+		echo LB;
+		echo LB;
+	}
+
+	//
+	// Include supporting files
+	//
+
+	needs(__DIR__ . '/library/parody/Load.php');
+	needs(__DIR__ . '/library/Assertion.php');
+
+	/**
+	 *
+	 */
+	$errors = array();
+
+
+	/**
+	 * Error handler which collects all the errors for display in the event of a failure.  We
+	 * don't bother showing these errors unless there is a failure.
+	 */
+	set_error_handler(function($number, $string, $file, $line, $context) use (&$errors)
+	{
+		$type = 'Unknown(' . $number . ')';
+
+		switch ($number) {
+			case E_WARNING: $type = 'E_WARNING'; break;
+			case E_NOTICE:  $type = 'E_NOTICE';  break;
+			case E_STRICT:  $type = 'E_STRICT';  break;
+		}
+
+		$errors[] = sprintf(
+			'[%s](%s:%d): %s' . LB,
+			$type, $file, $line, $string
+		);
+	});
+
+
+	/**
+	 * When the system shuts down we need print another line, but also look to see if we received
+	 * a fatal error and print it cleanly.
+	 */
+	register_shutdown_function(function() {
+		echo LB;
+
+		if ($error = error_get_last()) {
+			if ($error['type'] == E_ERROR || $error['type'] == E_PARSE) {
+				echo LB;
+				echo _('Fatal error:', 'red') . ' ' . $error['message'] . _(' @ ', 'green');
+				echo _($error['file'] . '#' . $error['line'], 'yellow');
+				echo LB;
+			}
+		}
+	});
+
 
 	/**
 	 * Get a message printed in a particular color
@@ -32,7 +112,8 @@
 	 * @param string $color The color to print it in
 	 * @return string The colored message for CLI output
 	 */
-	function _($message, $color) {
+	function _($message, $color)
+	{
 		$colors = [
 			'black'        => '0;30',
 			'dark_gray'    => '1;30',
@@ -79,11 +160,18 @@
 				$config_path = '..' . DS . $config_path
 			);
 
-			return needs(realpath(__DIR__ . DS . $config_path));
+			$file = realpath(__DIR__ . DS . $config_path);
+
+			return needs($file);
 
 		} catch (\Exception $e) {
-			echo _('Config Failed: ', 'red');
-			echo $e->getMessage() . LB;
+			$output = $e->getMessage();
+
+			if (preg_match_all('#PHP Parse error\:  (.*) in (.*) on line (\d)#', $output, $matches)) {
+				echo _('Config Failed: ', 'red') . $matches[1][0] . _(' @ ', 'green');
+				echo _($matches[2][0] . '#' . $matches[3][0], 'yellow');
+			}
+
 			echo LB;
 			exit(-1);
 		}
@@ -98,6 +186,7 @@
 	 */
 	function needs($file)
 	{
+
 		if (!is_readable($file)) {
 			throw new \Exception(sprintf(
 				'Cannot include %s, file is not readable',
@@ -105,18 +194,13 @@
 			));
 		}
 
-		exec(PHP_BINARY . ' -l ' . escapeshellarg($file), $output);
+		exec(sprintf('%s -l %s 2>&1', PHP_BINARY, escapeshellarg($file)), $output);
 
-		$output = implode("\n", $output);
-
-		if (strpos($output, 'Parse error') !== FALSE) {
-			throw new \Exception(sprintf(
-				'Cannot include %s, syntax error',
-				$output
-			));
+		if (strpos($output[0], 'PHP Parse error:') !== FALSE) {
+			throw new \Exception($output[0]);
 		}
 
-		return include $file;
+		return @include $file;
 	}
 
 
@@ -127,15 +211,16 @@
 	 */
 	function add_tests($directory)
 	{
-		$fixtures = array();
-		$fixtures = array_merge($fixtures, glob($directory . DS . '*.php'));
+		$test_files = array();
+		$test_files = array_merge($test_files, glob($directory . DS . '*.php'));
 
 		foreach (glob($directory . DS . '*', GLOB_ONLYDIR) as $sub_directory) {
-			$fixtures = array_merge($fixtures, add_tests($sub_directory));
+			$test_files = array_merge($test_files, add_tests($sub_directory));
 		}
 
-		return $fixtures;
+		return $test_files;
 	}
+
 
 	/**
 	 * Execute Fixtures and Tests.  If no argument was passed to lab, then we will scan the
@@ -144,78 +229,60 @@
 	 *
 	 * @return void
 	 */
-	call_user_func(function() use($argv) {
+	call_user_func(function() use($argv, &$errors)
+	{
+		if (!empty($config['disable_autoloading'])) {
+			spl_autoload_register(function($class) {
+				throw new \Exception(sprintf(
+					'Cannot autoload class %s, autoloading disabled, try needs() or using a mock',
+					$class
+				));
+			});
+		}
 
-		$config         = get_config();
-		$test_directory = !preg_match(REGEX_ABSOLUTE_PATH, $config['tests_directory'])
+		$config          = get_config();
+		$tests_directory = !preg_match(REGEX_ABSOLUTE_PATH, $config['tests_directory'])
 			? realpath(__DIR__ . DS . $config['tests_directory'])
 			: $config['tests_directory'];
 
-
 		if (!isset($argv[1])) {
-
-			$banner = (
-				' _        _    ____          _   ___  ' . LB .
-				'| |      / \  | __ )  __   _/ | / _ \ ' . LB .
-				'| |     / _ \ |  _ \  \ \ / / || | | |' . LB .
-				'| |___ / ___ \| |_) |  \ V /| || |_| |' . LB .
-				'|_____/_/   \_\____/    \_/ |_(_)___/  By: Dotink'
-			);
-
-			echo _($banner, 'dark_gray') . LB . LB;
-
-			$fixtures = add_tests($test_directory);
-
-			foreach ($fixtures as $fixture) {
-				passthru(
-					PHP_BINARY . ' -d display_errors=Off ' . __FILE__ . ' ' . escapeshellarg($fixture),
-					$status
+			foreach (add_tests($tests_directory) as $test_file) {
+				$command = sprintf(
+					'%s -d display_errors=Off %s %s %s',
+					PHP_BINARY, __FILE__, escapeshellarg($test_file),
+					file_exists('/dev/null')
+						? '2>/dev/null'
+						: '2> nul'
 				);
+
+				passthru($command, $status);
 
 				if ($status !== 0) {
 					exit(-1);
 				}
 			}
 
-			return;
+			exit(0);
 		}
 
-		$config   = get_config();
-		$fixture  = require($argv[1]);
-		$file     = str_replace($test_directory . DS, '', $argv[1]);
-		$headline = sprintf('Running %s', pathinfo($file, PATHINFO_FILENAME));
-		$errors   = array();
+		$data      = $config['data'];
+		$test_file = needs($argv[1]);
+		$file_path = str_replace($tests_directory . DS, '', $argv[1]);
 
-		set_error_handler(function($number, $string, $file, $line, $context) use (&$errors) {
-			$type = 'Unknown(' . $number . ')';
+		echo _(sprintf('Running %s', pathinfo($file_path, PATHINFO_FILENAME)), 'blue') . LB;
 
-			switch ($number) {
-				case E_ERROR:   $type = 'E_ERROR';   break;
-				case E_WARNING: $type = 'E_WARNING'; break;
-				case E_NOTICE:  $type = 'E_NOTICE';  break;
-				case E_STRICT:  $type = 'E_STRICT';  break;
-			}
-
-			$errors[] = sprintf(
-				'[%s](%s:%d): %s' . LB,
-				$type, $file, $line, $string
-			);
-		});
-
-		register_shutdown_function(function() {
-
-		});
-
-		echo _($headline, 'blue') . LB;
-
+		//
+		// Setup
+		//
 		try {
 			if (isset($config['setup']) && $config['setup'] instanceof \Closure) {
-				call_user_func($config['setup'], $config);
+				call_user_func($config['setup'], $config['data']);
 			}
 
-			if (isset($fixture['setup']) && $fixture['setup'] instanceof \Closure) {
-				call_user_func($fixture['setup'], $config);
+			if (isset($test_file['setup']) && $test_file['setup'] instanceof \Closure) {
+				call_user_func($test_file['setup'], $config['data']);
 			}
+
 		} catch (\Exception $e) {
 			echo _('Setup Failed: ', 'red');
 			echo $e->getMessage() . LB;
@@ -223,13 +290,17 @@
 			exit(-1);
 		}
 
-		if (isset($fixture['tests']) && is_array($fixture['tests'])) {
-			foreach ($fixture['tests'] as $message => $test) {
+		//
+		// Run Tests
+		//
+
+		if (isset($test_file['tests']) && is_array($test_file['tests'])) {
+			foreach ($test_file['tests'] as $message => $test) {
 				if ($test instanceof \Closure) {
 					echo TAB . ' - ' . $message . ' ';
 
 					try {
-						call_user_func($test, $config);
+						call_user_func($test, $data);
 						echo '[' . _('PASS', 'green') . ']' . LB;
 
 					} catch (\Exception $e) {
@@ -242,26 +313,31 @@
 						foreach ($errors as $error) {
 							echo $error . LB;
 						}
-						echo LB;
 						exit(-1);
 					}
 				}
 			}
 		}
 
+		//
+		// Cleanup
+		//
+
 		try {
-			if (isset($fixture['cleanup']) && $fixture['cleanup'] instanceof \Closure) {
-				call_user_func($fixture['cleanup'], $config);
+			if (isset($test_file['cleanup']) && $test_file['cleanup'] instanceof \Closure) {
+				call_user_func($test_file['cleanup'], $config['data']);
 			}
 
 			if (isset($config['cleanup']) && $config['cleanup'] instanceof \Closure) {
-				call_user_func($config['cleanup'], $config);
+				call_user_func($config['cleanup'], $config['data']);
 			}
+
 		} catch (\Exception $e) {
 			echo _('Cleanup Failed: ', 'red');
-			echo $e->getMessage() . LB;
-			echo LB;
+			echo $e->getMessage();
 			exit(-1);
 		}
+
+		exit(0);
 	});
 }

@@ -474,16 +474,17 @@
 					return $this;
 				} else {
 					throw new \Exception(sprintf(
-						'Assertion failed, callable %s threw exception of type %s instead of %s',
+						'Assertion failed, callable %s threw "%s" instead of "%s" (%s)',
 						$this->value,
 						$exception_class,
-						$class
+						$class,
+						$e->getMessage()
 					));
 				}
 			}
 
 			throw new \Exception(sprintf(
-				'Assertion failed, callable %s returned %s instead of throwing exception %s',
+				'Assertion failed, callable %s returned %s instead of throwing "%s"',
 				$this->value,
 				$this->formatValue($result),
 				$class

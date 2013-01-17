@@ -3,33 +3,44 @@
 	return [
 
 		//
-		// This defines a relative or absolute path to our tests
-		// directory containing our "fixtures".
+		// This defines a relative or absolute path to our tests directory containing our
+		// test files
 		//
 
 		'tests_directory' => '../tests',
 
 		//
-		// The global 'setup' key can contain a closure to run logic
-		// required to run at the beginning of every fixture.
+		// By default we disable autoloading.  The prevents us from loading and depending on any
+		// classes by accident forcing us to purposefully include them or mock them
 		//
 
-		'setup' => function($config) {
+		'disable_autoloading' => TRUE,
+
+		//
+		// The global 'setup' key can contain a closure to run fixture logic at the beginning of
+		// every
+		//
+
+		'setup' => function($data) {
+
 		},
 
 		//
-		// The global 'cleanup' key can contain a closure to run
-		// logic required to run at the end of every fixture.
+		// The global 'cleanup' key can contain a closure to run fixture cleanup logic at the end
+		// of every test file
 		//
 
 		'cleanup' => function($config) {
+
 		},
 
 		//
-		// Arbitrary values can be specified, all 'setup' and
-		// 'cleanup' functions (global) and per fixture are given
-		// the $config array as a first parameter to use these
-		// values.
+		// Arbitrary values can be specified, all 'setup' and 'cleanup' functions (global) and per
+		// test file are given the $data array as a first parameter.
 		//
+
+		'data' => [
+
+		]
 	];
 }

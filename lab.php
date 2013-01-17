@@ -30,6 +30,7 @@
 	//
 
 	const REGEX_ABSOLUTE_PATH = '#^(/|\\\\|[a-z]:(\\\\|/)|\\\\|//)#i';
+	const REGEX_PARSE_ERROR   = '#PHP Parse error\:  (.*) in (.*) on line (\d)#';
 
 	//
 	// Print our our label if we're the parent
@@ -61,7 +62,7 @@
 	needs(__DIR__ . '/library/Assertion.php');
 
 	/**
-	 *
+	 * An array of errors collected during the running of the script.
 	 */
 	$errors = array();
 
@@ -147,7 +148,8 @@
 
 
 	/**
-	 * Gets the configuration for the system
+	 * Gets the configuration for the system, also since it uses needs we can catch the syntax
+	 * error and pretty print it special just for our config!
 	 *
 	 * @return array The system configuration
 	 */
@@ -165,16 +167,36 @@
 			return needs($file);
 
 		} catch (\Exception $e) {
-			$output = $e->getMessage();
-
-			if (preg_match_all('#PHP Parse error\:  (.*) in (.*) on line (\d)#', $output, $matches)) {
-				echo _('Config Failed: ', 'red') . $matches[1][0] . _(' @ ', 'green');
-				echo _($matches[2][0] . '#' . $matches[3][0], 'yellow');
-			}
-
+			echo _('Config Failed: ', 'red') . $e->getMessage();
 			echo LB;
 			exit(-1);
 		}
+	}
+
+
+	/**
+	 * Gets detail about an exception that was thrown.
+	 *
+	 * @param Exception $e The exception to get details on
+	 * @return array A clean array of information about the exception
+	 */
+	function get_detail(\Exception $e)
+	{
+		$trace  = $e->getTrace();
+
+		return [
+			'Context' => isset($trace[0]['class'])
+				? $trace[0]['class'] . '::' . $trace[0]['function']
+				: $trace[0]['function'],
+
+			'File' => isset($trace[0]['file'])
+				? $trace[0]['file']
+				: $e->getFile(),
+
+			'Line' => isset($trace[0]['line'])
+				? $trace[0]['line']
+				: $e->getLine()
+		];
 	}
 
 
@@ -196,11 +218,17 @@
 
 		exec(sprintf('%s -l %s 2>&1', PHP_BINARY, escapeshellarg($file)), $output);
 
-		if (strpos($output[0], 'PHP Parse error:') !== FALSE) {
-			throw new \Exception($output[0]);
+		if (preg_match_all(REGEX_PARSE_ERROR, $output[0], $matches)) {
+			throw new \Exception(
+				$matches[1][0]               .  // The syntax error
+				_(' @ ', 'green')            .  // @
+				_($matches[2][0], 'yellow')  .  // File
+				'#'                          .  // #
+				_($matches[3][0], 'yellow')     // Line number
+			);
 		}
 
-		return @include $file;
+		return include $file;
 	}
 
 
@@ -285,8 +313,7 @@
 
 		} catch (\Exception $e) {
 			echo _('Setup Failed: ', 'red');
-			echo $e->getMessage() . LB;
-			echo LB;
+			echo $e->getMessage();
 			exit(-1);
 		}
 
@@ -308,10 +335,13 @@
 						echo LB;
 						echo $e->getMessage() . LB;
 						echo LB;
-						echo 'PHP Errors (' . count($errors) . ')' . LB;
+						foreach (get_detail($e) as $type => $value) {
+							echo _(str_pad($type . ':', 10, ' '), 'cyan') . $value . LB;
+						}
 						echo LB;
+						echo 'PHP Errors (' . count($errors) . ')' . LB;
 						foreach ($errors as $error) {
-							echo $error . LB;
+							echo LB . $error;
 						}
 						exit(-1);
 					}

@@ -288,6 +288,8 @@
 				if ($status !== 0) {
 					exit(-1);
 				}
+
+				echo _('ALL TESTS PASSING', 'yellow') . LB;
 			}
 
 			exit(0);

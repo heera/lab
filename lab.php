@@ -139,7 +139,11 @@
 
 
 	/**
+	 * A simple assertion wrapper
 	 *
+	 * @param mixed $value The value to perform assertions on
+	 * @param boolean $raw The option to treat the value as non-parseable, default FALSE
+	 * @return Assertion An assertion object
 	 */
 	function assert($value, $raw = FALSE)
 	{

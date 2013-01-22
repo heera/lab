@@ -263,6 +263,11 @@
 	 */
 	call_user_func(function() use($argv, &$errors)
 	{
+		$config          = get_config();
+		$tests_directory = !preg_match(REGEX_ABSOLUTE_PATH, $config['tests_directory'])
+			? realpath(__DIR__ . DS . $config['tests_directory'])
+			: $config['tests_directory'];
+
 		if (!empty($config['disable_autoloading'])) {
 			spl_autoload_register(function($class) {
 				throw new \Exception(sprintf(
@@ -271,11 +276,6 @@
 				));
 			});
 		}
-
-		$config          = get_config();
-		$tests_directory = !preg_match(REGEX_ABSOLUTE_PATH, $config['tests_directory'])
-			? realpath(__DIR__ . DS . $config['tests_directory'])
-			: $config['tests_directory'];
 
 		if (!isset($argv[1])) {
 			foreach (add_tests($tests_directory) as $test_file) {

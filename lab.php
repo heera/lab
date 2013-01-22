@@ -58,8 +58,8 @@
 	// Include supporting files
 	//
 
-	needs(__DIR__ . '/library/parody/Load.php');
-	needs(__DIR__ . '/library/Assertion.php');
+	needs(__DIR__ . '/parody/Load.php');
+	needs(__DIR__ . '/src/Assertion.php');
 
 	/**
 	 * An array of errors collected during the running of the script.

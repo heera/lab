@@ -304,7 +304,7 @@
 		$test_file = needs($argv[1]);
 		$file_path = str_replace($tests_directory . DS, '', $argv[1]);
 
-		echo _(sprintf('Running %s', pathinfo($file_path, PATHINFO_FILENAME)), 'blue') . LB;
+		echo _(sprintf('Running %s', str_replace('.php', '', $file_path)), 'blue') . LB;
 
 		//
 		// Setup

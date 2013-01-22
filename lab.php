@@ -293,8 +293,9 @@
 					exit(-1);
 				}
 
-				echo _('ALL TESTS PASSING', 'yellow') . LB;
 			}
+
+			echo _('ALL TESTS PASSING', 'yellow') . LB;
 
 			exit(0);
 		}

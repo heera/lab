@@ -58,7 +58,7 @@
 	// Include supporting files
 	//
 
-	needs(__DIR__ . '/parody/Load.php');
+	needs(__DIR__ . '/parody/src/Load.php');
 	needs(__DIR__ . '/src/Assertion.php');
 
 	/**

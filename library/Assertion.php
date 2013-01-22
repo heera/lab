@@ -330,7 +330,9 @@
 		public function equals($value, $exactly = FALSE)
 		{
 			$result    = $this->resolve();
-			$condition = $exactly ? ($result === $value) : ($result == $value);
+			$condition = $exactly
+				? ($result === $value)
+				: ($result == $value);
 
 			if ($condition) {
 				return $this;
@@ -349,7 +351,7 @@
 		 * Asserts that the result has a given key or keys
 		 *
 		 * @access public
-		 * @param mixed $key A key to check for
+		 * @param int|string $key A key to check for
 		 * @param ...
 		 * @return Assertion The original assertion for method chaining
 		 */
@@ -624,7 +626,7 @@
 		 *
 		 * @access private
 		 * @param boolean $raw Whether or not we should try special interpretations
-		 * @return void;
+		 * @return void
 		 */
 		private function loadString($raw)
 		{

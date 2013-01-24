@@ -8,26 +8,26 @@ Lab is incomplete alpha software.  It's APIs are subject to change and additions
 
 ## Usage
 
-Lab is comprised of a few different components.  For the sake of brevity we will group these components into two major pieces.
+Lab is comprised of two major components.
 
 1. The `lab.php` script
-2. The `library`
+2. The `Assertion` class
 
-Although it is completely possible to use the library independently, all examples presume to be using the test execution script and, thus, may use helper functions provided within that script.
+Although it is completely possible to use the `Assertion` class independently, all examples presume to be using the `lab.php` test execution script and, thus, may use helper functions provided within that script.
 
 ### Terminology
 
 #### Fixture
 
-A fixture is a collection of tests with common setup and cleanup code.  Generally speaking a fixture will test an entire class, however, for more complex classes that require significant setup or cleanup for individual pieces you might have multiple fixtures across a single class.
+A fixture is a "fixed" or known state which the environment is put into before performing tests.  Like most frameworks, Lab provides points for setting up a fixture and "tearing it down," although Lab calls this the "cleanup" phase.  Lab is organized in such a way that one test file should represent one fixture with multiple tests that need to use that fixture.
 
-#### Iteration
+#### Cycle
 
-Lab goes through a single iteration of a loop per fixture.  Each iteration is a separate execution of PHP on that fixture, so any classes which were loaded in another fixture's code will not be available unless also loaded in the current fixture's code.  If you have code which is required by all fixtures (including common constants, modifying PHP's state variables with dummy information, etc) you can execute this in the `setup` closure in the main config.
+A single cycle consists of a global and local setup for the fixture, a series of tests, and finally a local and global cleanup for that fixture; in that order.  Each cycle, additionally, is run in an isolated context.  This is achieved by independent executions of PHP for each test file in the tests directory.
 
 #### Test
 
-A test is a single entry in a fixture's `tests` array.  The key is used to describe the test for result output, and the associated closure is the test code itself.  The test will fail if any uncaught exception is thrown.
+A single test is a single function in the `tests` array of any file in our tests directory.  A single test may contain multiple assertions which upon failure will throw an exception.
 
 ### Getting Lab
 
@@ -44,7 +44,7 @@ The `lab.config.example` script distributed with Lab provides an example configu
 cp lab.config.example lab.config
 ```
 
-### Creating Fixtures
+### Setting Up a Fixture and adding Tests
 
 By default the `test_directory` value is configured one directory back.  So let's create our tests directory first:
 
@@ -52,7 +52,7 @@ By default the `test_directory` value is configured one directory back.  So let'
 mkdir ../tests
 ```
 
-Let's create a simple example fixture simply called `Fixture`.  Open up a text editor and paste in the following:
+Let's create a simple example test file and just call it `Fixture`.  Open up a text editor and paste in the following:
 
 ```php
 <?php namespace Dotink\Lab {
@@ -78,15 +78,15 @@ Let's create a simple example fixture simply called `Fixture`.  Open up a text e
 }
 ```
 
-Now save the file as `Fixture.php` in your tests directory.  Now we can run `php lab.php` in the lab directory and see our results.
+Now save the file as `Fixture.php` in your tests directory.  It is important to note that because we have not configured any global or local setup logic, this is essentially an "empty" fixture.  Now we can run `php lab.php` in the lab directory and see our results.
 
 ![A screenshot showing basic lab output](https://dl.dropbox.com/u/31068853/lab_example_empty_fixture.png)
 
 ### A Simple Assertion
 
-Lab includes a library which is easily accessible through a number of helper methods.  One of the classes in that library is the `Assert` class.  You can create assertions in Lab by using the `assert()` function.
+Lab includes a library which is easily accessible through a few shorthand helper functions.  One of the classes in that library is the `Assertion` class.  You can create assertions in Lab by using the `assert()` function.
 
-By default, assertions will attempt to parse additional meaning about the values you provide.  So for example if you provide a string that looks like a callback, e.g. `MyClass::myMethod` then Lab will treat it as such.  We can see this by adding a new test to the `tests` key in our current fixture:
+By default, assertions will attempt to parse additional meaning about the values you provide.  So for example if you provide a string that looks like a method call, e.g. `MyClass::myMethod` then Lab will treat it as such.  We can see this by adding a new test to the `tests` key for our existing empty fixture:
 
 ```php
 'tests' => [
@@ -117,7 +117,7 @@ And rerun `php lab.php`:
 
 ### Testing Full Methods
 
-Lab allows you to test all methods on a class including private and protected methods without differentiating or performing any additional work as the required reflection is automatic.  Let's add a dummy class to our fixture's setup so that we have something to work with:
+Lab's assertion class allows you to test all methods including private and protected.  Testing these methods is completely automatic and there is no additional setup required.  To get an idea of how assertions work, let's add a dummy class to our local setup for the fixture. so that we have something to work with:
 
 ```php
 'setup' => function() {
@@ -150,13 +150,13 @@ And we'll add the following test to our tests array:
 },
 ```
 
-Note in the above code that we had to specify the namespace on the class.  Since the class was defined in our fixture which is namespaced under `Dotink\Lab` it will also reside in that namespace.  You must always use a fully qualified class name with its full namespace when referencing classes.
+Note that because we defined the class inside this file it's namespace is actually `Dotink\Lab`, so we need to make sure we specify that in the call to assert.  The assert method always assumes to be working out of the global namespace, so you must specify the complete namespace minus the root (leading) `\` at the very beginning.
 
 Now we can rerun `php lab.php`
 
 ![A screenshot showing lab running a full static method test](https://dl.dropbox.com/u/31068853/lab_example_static_method_test.png)
 
-Using the `with()` method above, we were able to define the arguments that would be passed to the method we were testing.  For non-static methods we need to also include the `using()` method and pass in the object we want to run the method on.  Let's see that in action with one more test, add:
+Using the `with()` method shown above, we are able to define the arguments that would be passed to the method we were testing.  If the method is not static, we can provide the object to execute on with the `using()` method:
 
 ```php
 'bailOnEmpty()' => function() {
@@ -190,4 +190,4 @@ Although it is also a separate library, Lab uses .inK's [Parody](http://www.gith
 
 ## Conclusion
 
-We here at .inK hope that you have fun using Lab and if you're interested in contributing we appreciate it as it still has a long way to go.  
+We here at .inK hope that you have fun using Lab and if you're interested in contributing we appreciate it as it still has a long way to go.

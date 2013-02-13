@@ -641,7 +641,7 @@
 						$this->reflectProperty();
 					}
 
-				} elseif (class_exists($this->value)) {
+				} elseif (class_exists($this->value, FALSE)) {
 					$this->isClass = TRUE;
 					$this->class   = $this->value;
 

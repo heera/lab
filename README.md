@@ -31,6 +31,8 @@ A single test is a single function in the `tests` array of any file in our tests
 
 ### Getting Lab
 
+The easiest way to get lab is to clone it using git.
+
 ```
 git clone --recursive https://github.com/dotink/Lab.git lab
 cd lab
@@ -38,19 +40,11 @@ cd lab
 
 ### Configuring Lab
 
-The `lab.config.example` script distributed with Lab provides an example configuration script.  You can copy this to `lab.config` and begin using lab right away!
-
-```
-cp lab.config.example lab.config
-```
+The `lab.config` script distributed with Lab provides an example usable configuration script.  You can configure a project's tests by copying and modifying this to the project directory.
 
 ### Setting Up a Fixture and adding Tests
 
-By default the `test_directory` value is configured so that the `test` folder should be in the same directory as your `lab.config` file.  So let's create our tests directory first:
-
-```
-mkdir tests
-```
+The `lab.config` file contians a `tests_directory` key in its configuration array.  By default, or if a configuration is not available, the value of this will simply be `tests`.  Each file in this directory should represent a single fixture and a series of tests related to that fixture.
 
 Let's create a simple example test file and just call it `Fixture`.  Open up a text editor and paste in the following:
 

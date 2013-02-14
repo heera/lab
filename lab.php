@@ -1,5 +1,7 @@
 <?php namespace Dotink\Lab {
 
+	use Exception;
+
 	//
 	// Useful shorthand constants
 	//
@@ -36,7 +38,7 @@
 	// Print our our label if we're the parent
 	//
 
-	if (!isset($argv[1])) {
+	if (!isset($argv[2])) {
 		ini_set('display_errors', 0);
 		ini_set('display_startup_errors', 0);
 
@@ -58,8 +60,14 @@
 	// Include supporting files
 	//
 
-	needs(__DIR__ . '/parody/src/Load.php');
-	needs(__DIR__ . '/src/Assertion.php');
+	try {
+		needs(__DIR__ . '/parody/src/Load.php');
+		needs(__DIR__ . '/src/Assertion.php');
+	} catch (Exception $e) {
+		echo _('Broken install: ', 'red') . $e->getMessage();
+		echo LB;
+		exit(-1);
+	}
 
 	/**
 	 * An array of errors collected during the running of the script.
@@ -155,22 +163,24 @@
 	 * Gets the configuration for the system, also since it uses needs we can catch the syntax
 	 * error and pretty print it special just for our config!
 	 *
+	 * @param string $file The file containing the config
 	 * @return array The system configuration
 	 */
-	function get_config()
+	function get_config($file)
 	{
+		if ($file === NULL) {
+			return [
+				'tests_directory'     => 'tests',
+				'disable_autoloading' => TRUE,
+				'setup'               => function(){},
+				'cleanup'             => function(){},
+				'data'                => []
+			];
+		}
+
 		try {
-			for (
-				$config_path = 'lab.config';
-				!is_readable(__DIR__ . DS . $config_path);
-				$config_path = '..' . DS . $config_path
-			);
-
-			$file = realpath(__DIR__ . DS . $config_path);
-
 			return needs($file);
-
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			echo _('Config Failed: ', 'red') . $e->getMessage();
 			echo LB;
 			exit(-1);
@@ -184,7 +194,7 @@
 	 * @param Exception $e The exception to get details on
 	 * @return array A clean array of information about the exception
 	 */
-	function get_detail(\Exception $e)
+	function get_detail(Exception $e)
 	{
 		$trace  = $e->getTrace();
 
@@ -214,7 +224,7 @@
 	{
 
 		if (!is_readable($file)) {
-			throw new \Exception(sprintf(
+			throw new Exception(sprintf(
 				'Cannot include %s, file is not readable',
 				$file
 			));
@@ -223,7 +233,7 @@
 		exec(sprintf('%s -l %s 2>&1', PHP_BINARY, escapeshellarg($file)), $output);
 
 		if (preg_match_all(REGEX_PARSE_ERROR, $output[0], $matches)) {
-			throw new \Exception(
+			throw new Exception(
 				$matches[1][0]               .  // The syntax error
 				_(' @ ', 'green')            .  // @
 				_($matches[2][0], 'yellow')  .  // File
@@ -263,36 +273,58 @@
 	 */
 	call_user_func(function() use($argv, &$errors)
 	{
-		$config          = get_config();
+		$directory = isset($argv[1]) && is_dir($argv[1])
+			? rtrim($argv[1], '\\/' . DS)
+			: getcwd();
+
+		for (
+			$config_path  = realpath($directory);
+
+			$config_path != realpath($config_path . DS . '..')
+			&& !is_readable($config_path . DS . 'lab.config');
+
+			$config_path  = realpath($config_path . DS . '..')
+		);
+
+		if ($config_path == realpath($config_path . DS . '..')) {
+			$config    = get_config(NULL);
+			$directory = getcwd();
+		} else {
+			$config    = get_config($config_path . DS . 'lab.config');
+			$directory = $config_path;
+		}
+
 		$tests_directory = !preg_match(REGEX_ABSOLUTE_PATH, $config['tests_directory'])
-			? realpath(__DIR__ . DS . $config['tests_directory'])
-			: $config['tests_directory'];
+			? realpath($directory . DS . $config['tests_directory'])
+			: realpath($config['tests_directory']);
 
 		if (!empty($config['disable_autoloading'])) {
 			spl_autoload_register(function($class) {
-				throw new \Exception(sprintf(
+				throw new Exception(sprintf(
 					'Cannot autoload class %s, autoloading disabled, try needs() or using a mock',
 					$class
 				));
 			});
 		}
 
-		if (!isset($argv[1])) {
-			foreach (add_tests($tests_directory) as $test_file) {
-				$command = sprintf(
-					'%s -d display_errors=Off %s %s %s',
-					PHP_BINARY, __FILE__, escapeshellarg($test_file),
-					file_exists('/dev/null')
-						? '2>/dev/null'
-						: '2> nul'
-				);
+		if (!isset($argv[2])) {
+			if ($tests_directory) {
+				foreach (add_tests($tests_directory) as $test_file) {
+					$command = sprintf(
+						'%s -d display_errors=Off %s %s %s %s',
+						PHP_BINARY, __FILE__,
+						$directory, escapeshellarg($test_file), file_exists('/dev/null')
+							? '2>/dev/null'
+							: '2> nul'
+					);
 
-				passthru($command, $status);
+					passthru($command, $status);
 
-				if ($status !== 0) {
-					exit(-1);
+					if ($status !== 0) {
+						exit(-1);
+					}
+
 				}
-
 			}
 
 			echo _('ALL TESTS PASSING', 'yellow') . LB;
@@ -302,7 +334,7 @@
 
 		$data      = $config['data'];
 		$test_file = needs($argv[1]);
-		$file_path = str_replace($tests_directory . DS, '', $argv[1]);
+		$file_path = str_replace($tests_directory . DS, '', $argv[2]);
 
 		echo _(sprintf('Running %s', str_replace('.php', '', $file_path)), 'blue') . LB;
 
@@ -318,7 +350,7 @@
 				call_user_func($test_file['setup'], $config['data']);
 			}
 
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			echo _('Setup Failed: ', 'red');
 			echo $e->getMessage();
 			exit(-1);
@@ -337,7 +369,7 @@
 						call_user_func($test, $data);
 						echo '[' . _('PASS', 'green') . ']' . LB;
 
-					} catch (\Exception $e) {
+					} catch (Exception $e) {
 						echo '[' . _('FAIL', 'red')   . ']' . LB;
 						echo LB;
 						echo $e->getMessage() . LB;
@@ -369,7 +401,7 @@
 				call_user_func($config['cleanup'], $config['data']);
 			}
 
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			echo _('Cleanup Failed: ', 'red');
 			echo $e->getMessage();
 			exit(-1);

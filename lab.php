@@ -333,7 +333,7 @@
 		}
 
 		$data      = $config['data'];
-		$test_file = needs($argv[1]);
+		$test_file = needs($argv[2]);
 		$file_path = str_replace($tests_directory . DS, '', $argv[2]);
 
 		echo _(sprintf('Running %s', str_replace('.php', '', $file_path)), 'blue') . LB;

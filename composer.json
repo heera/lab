@@ -1,0 +1,20 @@
+{
+	"name": "dotink/lab",
+	"description": "A 'stupid' test framework",
+	"keywords": ["testing","mock"],
+	"license": "AGPL",
+	"authors": [
+		{
+			"name": "Matthew J. Sahagian",
+			"email": "msahagian@dotink.org",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.4.0",
+		"dotink/parody": "*"
+	},
+	"autoload": {
+		"classmap": ["src/"]
+	}
+}

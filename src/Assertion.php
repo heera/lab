@@ -1,5 +1,15 @@
 <?php namespace Dotink\Lab {
 
+	/**
+	 * A simple assertion library
+	 *
+	 * @copyright Copyright (c) 2013, Matthew J. Sahagian
+	 * @author Matthew J. Sahagian [mjs] <msahagian@dotink.org>
+	 *
+	 * @license Please reference the LICENSE.md file at the root of this distribution
+	 *
+	 * @package Lab
+	 */
 	class Assertion
 	{
 		const REGEX_PHP_METHOD = '/

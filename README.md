@@ -4,7 +4,7 @@ Lab is a stupid test "framework" that works well with [Parody](http://www.github
 
 ## Status
 
-Lab is incomplete alpha software.  It's APIs are subject to change and additions without notice.  Attempts will be made to keep this document as updated as possible.
+Lab is beta software.  It's APIs are subject to change and additions without notice.  Attempts will be made to keep this document as updated as possible.
 
 ## Usage
 
@@ -46,10 +46,10 @@ cp lab.config.example lab.config
 
 ### Setting Up a Fixture and adding Tests
 
-By default the `test_directory` value is configured one directory back.  So let's create our tests directory first:
+By default the `test_directory` value is configured so that the `test` folder should be in the same directory as your `lab.config` file.  So let's create our tests directory first:
 
 ```
-mkdir ../tests
+mkdir tests
 ```
 
 Let's create a simple example test file and just call it `Fixture`.  Open up a text editor and paste in the following:

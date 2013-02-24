@@ -185,6 +185,9 @@
 					$this->loadBoolean();
 					break;
 
+				case 'NULL':
+					break;
+
 				default:
 					throw new \Exception(sprintf(
 						'Cannot assert type %s, not supported',

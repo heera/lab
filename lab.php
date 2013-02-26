@@ -32,7 +32,7 @@
 	//
 
 	const REGEX_ABSOLUTE_PATH = '#^(/|\\\\|[a-z]:(\\\\|/)|\\\\|//)#i';
-	const REGEX_PARSE_ERROR   = '#PHP Parse error\:  (.*) in (.*) on line (\d)#';
+	const REGEX_PARSE_ERROR   = '#PHP Parse error\:  (.*) in (.*) on line (\d+)#';
 
 	//
 	// Print our our label if we're the parent
@@ -333,8 +333,14 @@
 		}
 
 		$data      = $config['data'];
-		$test_file = needs($argv[2]);
 		$file_path = str_replace($tests_directory . DS, '', $argv[2]);
+
+		try {
+			$test_file = needs($argv[2]);
+		} catch (Exception $e) {
+			echo $e->getMessage();
+			exit(-1);
+		}
 
 		echo _(sprintf('Running %s', str_replace('.php', '', $file_path)), 'blue') . LB;
 

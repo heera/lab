@@ -93,7 +93,7 @@ assert('ltrim')
 	-> equals ('other')
 
 	-> with   ('  default  ')
-	-> equals ('default')
+	-> equals ('default  ')
 ;
 ```
 

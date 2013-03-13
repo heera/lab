@@ -681,6 +681,11 @@
 			$this->isObject = TRUE;
 			$this->class    = get_class($this->value);
 			$this->object   = $this->value;
+
+			if (is_callable($this->value)) {
+				$this->call      = $this->value;
+				$this->isClosure = TRUE;
+			}
 		}
 
 

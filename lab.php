@@ -14,10 +14,12 @@
 	// Constants for comparisons operations
 	//
 
-	const GT  = '>';
-	const LT  = '<';
-	const GTE = '>=';
-	const LTE = '<=';
+	const GT      = '>';
+	const LT      = '<';
+	const GTE     = '>=';
+	const LTE     = '<=';
+	const EXACTLY = '===';
+
 
 	//
 	// Constants for conditional operations
@@ -25,14 +27,13 @@
 
 	const EVEN    = 1;
 	const ODD     = 0;
-	const EXACTLY = TRUE;
 
 	//
 	// Support Constants for built-in functionality
 	//
 
 	const REGEX_ABSOLUTE_PATH = '#^(/|\\\\|[a-z]:(\\\\|/)|\\\\|//)#i';
-	const REGEX_PARSE_ERROR   = '#PHP Parse error\:  (.*) in (.*) on line (\d+)#';
+	const REGEX_PARSE_ERROR   = '#PHP Parse error\:  (.*) in (.*) on line (\d+)#i';
 
 	//
 	// Print our our label if we're the parent

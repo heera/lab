@@ -1,14 +1,48 @@
-# `Assertion`
+# Assertion
+## A simple assertion library
 
+_Copyright (c) 2013, Matthew J. Sahagian_.
+_Please reference the LICENSE.md file at the root of this distribution_
 
+#### Namespace
+
+`Dotink\Lab`
+
+#### Authors
+
+<table>
+	<thead>
+		<th>Name</th>
+		<th>Handle</th>
+		<th>Email</th>
+	</thead>
+	<tbody>
+	
+		<tr>
+			<td>
+				Matthew J. Sahagian
+			</td>
+			<td>
+				mjs
+			</td>
+			<td>
+				msahagian@dotink.org
+			</td>
+		</tr>
+	
+	</tbody>
+</table>
 
 ## Properties
-
 
 ### Instance Properties
 #### <span style="color:#6a6e3d;">$args</span>
 
 Arguments held for callable assertions
+
+#### <span style="color:#6a6e3d;">$class</span>
+
+The class for the currently asserted method, property, or object
 
 #### <span style="color:#6a6e3d;">$isClass</span>
 
@@ -46,9 +80,15 @@ Whether not the assertion is a property
 
 Whether not the assertion is a string
 
+#### <span style="color:#6a6e3d;">$method</span>
+
 #### <span style="color:#6a6e3d;">$needsObject</span>
 
 Whether or not the assertion needs an object (such as for object methods/properties)
+
+#### <span style="color:#6a6e3d;">$object</span>
+
+#### <span style="color:#6a6e3d;">$property</span>
 
 #### <span style="color:#6a6e3d;">$type</span>
 
@@ -58,17 +98,70 @@ The PHP determined type of the value
 
 The original value of the assertion
 
-#### <span style="color:#6a6e3d;">$class</span>
-
-#### <span style="color:#6a6e3d;">$method</span>
-
-#### <span style="color:#6a6e3d;">$object</span>
-
-#### <span style="color:#6a6e3d;">$property</span>
 
 
 
 ## Methods
+### Static Methods
+<hr />
+
+#### <span style="color:#3e6a6e;">compareReduced()</span>
+
+An abstracted comparison function which assumed values are already reduced
+
+###### Parameters
+
+<table>
+	<thead>
+		<th>Name</th>
+		<th>Type(s)</th>
+		<th>Description</th>
+	</thead>
+	<tbody>
+			
+		<tr>
+			<td>
+				$subject
+			</td>
+			<td>
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
+			</td>
+			<td>
+				The subject for comparison
+			</td>
+		</tr>
+					
+		<tr>
+			<td>
+				$type
+			</td>
+			<td>
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
+			</td>
+			<td>
+				The type of comparison (should use constants)
+			</td>
+		</tr>
+					
+		<tr>
+			<td>
+				$comparison
+			</td>
+			<td>
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
+			</td>
+			<td>
+				The comparison value
+			</td>
+		</tr>
+			
+	</tbody>
+</table>
+
+
 
 
 ### Instance Methods
@@ -93,7 +186,8 @@ Create a new assertion, this will determine much about the nature of our value
 				$value
 			</td>
 			<td>
-				mixed
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
 			</td>
 			<td>
 				The value to assert
@@ -105,7 +199,8 @@ Create a new assertion, this will determine much about the nature of our value
 				$raw
 			</td>
 			<td>
-				boolean
+									<a href="http://www.php.net/language.types.boolean.php">boolean</a>
+				
 			</td>
 			<td>
 				Whether we should disable special interpretation, default FALSE
@@ -128,6 +223,7 @@ Create a new assertion, this will determine much about the nature of our value
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">contains()</span>
@@ -149,7 +245,8 @@ Asserts that one or more values is contained in the result
 				$value
 			</td>
 			<td>
-				mixed
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
 			</td>
 			<td>
 				A value to check for in the result
@@ -161,7 +258,8 @@ Asserts that one or more values is contained in the result
 				$...
 			</td>
 			<td>
-				mixed
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
 			</td>
 			<td>
 				ad infinitum
@@ -183,6 +281,7 @@ Asserts that one or more values is contained in the result
 		</dd>
 	
 </dl>
+
 
 <hr />
 
@@ -205,7 +304,8 @@ Asserts that the result begins with a certain value
 				$beginning
 			</td>
 			<td>
-				mixed
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
 			</td>
 			<td>
 				A value equal to the beginning
@@ -228,6 +328,7 @@ Asserts that the result begins with a certain value
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">ends()</span>
@@ -249,7 +350,8 @@ Asserts that the result ends with a certain value
 				$end
 			</td>
 			<td>
-				mixed
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
 			</td>
 			<td>
 				A value equal to the ending
@@ -272,6 +374,7 @@ Asserts that the result ends with a certain value
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">equals()</span>
@@ -293,7 +396,8 @@ Asserts that the result is equal to a value
 				$value
 			</td>
 			<td>
-				mixed
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
 			</td>
 			<td>
 				The value to check for equality
@@ -301,17 +405,25 @@ Asserts that the result is equal to a value
 		</tr>
 					
 		<tr>
-			<td>
+			<td rowspan="3">
 				$exactly
 			</td>
 			<td>
-				boolean
+									<a href="http://www.php.net/language.types.boolean.php">boolean</a>
+				
 			</td>
-			<td>
+			<td rowspan="3">
 				Whether or not the comparision should be exact
 			</td>
 		</tr>
 			
+		<tr>
+			<td>
+									<a href="http://www.php.net/language.types.string.php">string</a>
+				
+			</td>
+		</tr>
+						
 	</tbody>
 </table>
 
@@ -327,6 +439,7 @@ Asserts that the result is equal to a value
 		</dd>
 	
 </dl>
+
 
 <hr />
 
@@ -349,7 +462,8 @@ Asserts that the result has a given key or keys
 				$key
 			</td>
 			<td>
-				int
+									<a href="http://www.php.net/language.types.integer.php">int</a>
+				
 			</td>
 			<td rowspan="3">
 				A key to check for
@@ -358,7 +472,8 @@ Asserts that the result has a given key or keys
 			
 		<tr>
 			<td>
-				string
+									<a href="http://www.php.net/language.types.string.php">string</a>
+				
 			</td>
 		</tr>
 								
@@ -367,7 +482,8 @@ Asserts that the result has a given key or keys
 				$...
 			</td>
 			<td>
-				int
+									<a href="http://www.php.net/language.types.integer.php">int</a>
+				
 			</td>
 			<td rowspan="3">
 				ad infinitum
@@ -376,7 +492,8 @@ Asserts that the result has a given key or keys
 			
 		<tr>
 			<td>
-				string
+									<a href="http://www.php.net/language.types.string.php">string</a>
+				
 			</td>
 		</tr>
 						
@@ -395,6 +512,71 @@ Asserts that the result has a given key or keys
 		</dd>
 	
 </dl>
+
+
+<hr />
+
+#### <span style="color:#3e6a6e;">is()</span>
+
+A more flexible pseudonym for equals() that allows for more complex comparisons
+
+##### Details
+
+When used with a single argument, this method provides very similar functionality to
+`equals()`, however, an additional/optional first parameter can be passed
+
+###### Parameters
+
+<table>
+	<thead>
+		<th>Name</th>
+		<th>Type(s)</th>
+		<th>Description</th>
+	</thead>
+	<tbody>
+			
+		<tr>
+			<td>
+				$modifier
+			</td>
+			<td>
+									<a href="http://www.php.net/language.types.string.php">string</a>
+				
+			</td>
+			<td>
+				An optional string to modify the type of comparison
+			</td>
+		</tr>
+					
+		<tr>
+			<td>
+				$value
+			</td>
+			<td>
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
+			</td>
+			<td>
+				The value to compare our subject to
+			</td>
+		</tr>
+			
+	</tbody>
+</table>
+
+###### Returns
+
+<dl>
+	
+		<dt>
+			Assertion
+		</dt>
+		<dd>
+			The original assertion for method chaining
+		</dd>
+	
+</dl>
+
 
 <hr />
 
@@ -417,7 +599,8 @@ Asserts that the length/size of the result measures to a certain number
 				$condition
 			</td>
 			<td>
-				string
+									<a href="http://www.php.net/language.types.string.php">string</a>
+				
 			</td>
 			<td>
 				An optional condition: GT, LT, GTE, LTE
@@ -429,7 +612,8 @@ Asserts that the length/size of the result measures to a certain number
 				$size
 			</td>
 			<td>
-				int
+									<a href="http://www.php.net/language.types.integer.php">int</a>
+				
 			</td>
 			<td>
 				The size to compare to
@@ -452,6 +636,7 @@ Asserts that the length/size of the result measures to a certain number
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">throws()</span>
@@ -473,7 +658,8 @@ Tests the current assertion to see if it throws an exception
 				$class
 			</td>
 			<td>
-				string
+									<a href="http://www.php.net/language.types.string.php">string</a>
+				
 			</td>
 			<td>
 				The exception class to test for
@@ -496,6 +682,7 @@ Tests the current assertion to see if it throws an exception
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">using()</span>
@@ -517,7 +704,7 @@ Provide an object to use for assertions which require an object
 				$object
 			</td>
 			<td>
-				object
+									object				
 			</td>
 			<td>
 				The object to use
@@ -540,6 +727,7 @@ Provide an object to use for assertions which require an object
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">with()</span>
@@ -561,7 +749,8 @@ Provide arguments for assertions which are callable
 				$arg
 			</td>
 			<td>
-				mixed
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
 			</td>
 			<td>
 				The first argument
@@ -573,7 +762,8 @@ Provide arguments for assertions which are callable
 				$...
 			</td>
 			<td>
-				mixed
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
 			</td>
 			<td>
 				ad infinitum
@@ -596,6 +786,7 @@ Provide arguments for assertions which are callable
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">checkObject()</span>
@@ -614,6 +805,7 @@ Checks whether or not an assertion requiring an object needs ones.
 		</dd>
 	
 </dl>
+
 
 <hr />
 
@@ -634,6 +826,7 @@ All the requisite logic for loading an array assertion
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">loadBoolean()</span>
@@ -653,6 +846,7 @@ All the requisite logic for loading a boolean assertion
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">loadNumber()</span>
@@ -671,6 +865,7 @@ All the requisite logic for loading a numeric assertion
 		</dd>
 	
 </dl>
+
 
 <hr />
 
@@ -693,7 +888,8 @@ All the requisite logic for loading a string assertion
 				$raw
 			</td>
 			<td>
-				boolean
+									<a href="http://www.php.net/language.types.boolean.php">boolean</a>
+				
 			</td>
 			<td>
 				Whether or not we should try special interpretations
@@ -716,6 +912,7 @@ All the requisite logic for loading a string assertion
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">loadObject()</span>
@@ -734,6 +931,7 @@ All the requisite logic for loading an object assertion
 		</dd>
 	
 </dl>
+
 
 <hr />
 
@@ -756,7 +954,8 @@ Formats a value somewhat neatly (depending on type) into a printable string
 				$value
 			</td>
 			<td>
-				mixed
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
 			</td>
 			<td>
 				The value to format
@@ -779,6 +978,7 @@ Formats a value somewhat neatly (depending on type) into a printable string
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">reflectMethod()</span>
@@ -797,6 +997,7 @@ Reflects a method and provides resolution callable
 		</dd>
 	
 </dl>
+
 
 <hr />
 
@@ -817,6 +1018,7 @@ Reflects a property and provides resolution callable
 	
 </dl>
 
+
 <hr />
 
 #### <span style="color:#3e6a6e;">resolve()</span>
@@ -835,6 +1037,9 @@ Resolves the complete assertion
 		</dd>
 	
 </dl>
+
+
+
 
 
 

@@ -36,6 +36,15 @@
 
 
 		/**
+		 * The class for the currently asserted method, property, or object
+		 *
+		 * @access private
+		 * @var string
+		 */
+		private $class = NULL;
+
+
+		/**
 		 * Whether not the assertion is a Class
 		 *
 		 * @access private
@@ -117,12 +126,39 @@
 
 
 		/**
+		 *
+		 *
+		 * @access private
+		 * @var string
+		 */
+		private $method = NULL;
+
+
+		/**
 		 * Whether or not the assertion needs an object (such as for object methods/properties)
 		 *
 		 * @access private
 		 * @var boolean
 		 */
 		private $needsObject = FALSE;
+
+
+		/**
+		 *
+		 *
+		 * @access private
+		 * @var object
+		 */
+		private $object = NULL;
+
+
+		/**
+		 *
+		 *
+		 * @access private
+		 * @var string
+		 */
+		private $property = NULL;
 
 
 		/**
@@ -143,11 +179,24 @@
 		private $value = NULL;
 
 
-
-		private $class = NULL;
-		private $method = NULL;
-		private $object = NULL;
-		private $property = NULL;
+		/**
+		 * An abstracted comparison function which assumed values are already reduced
+		 *
+		 * @param mixed $subject The subject for comparison
+		 * @param mixed $type The type of comparison (should use constants)
+		 * @param mixed $comparison The comparison value
+		 */
+		static private function compareReduced($subject, $type, $comparison)
+		{
+			switch ($type) {
+				case GT:      return $subject >   $comparison;
+				case LT:      return $subject <   $comparison;
+				case GTE:     return $subject >=  $comparison;
+				case LTE:     return $subject <=  $comparison;
+				case EXACTLY: return $subject === $comparison;
+				default:      return $subject ==  $comparison;
+			}
+		}
 
 
 		/**
@@ -337,7 +386,7 @@
 		 *
 		 * @access public
 		 * @param mixed $value The value to check for equality
-		 * @param boolean $exactly Whether or not the comparision should be exact
+		 * @param boolean|string $exactly Whether or not the comparision should be exact
 		 * @return Assertion The original assertion for method chaining
 		 */
 		public function equals($value, $exactly = FALSE)
@@ -408,6 +457,40 @@
 
 
 		/**
+		 * A more flexible pseudonym for equals() that allows for more complex comparisons
+		 *
+		 * When used with a single argument, this method provides very similar functionality to
+		 * `equals()`, however, an additional/optional first parameter can be passed
+		 *
+		 * @access public
+		 * @param string $modifier An optional string to modify the type of comparison
+		 * @param mixed $value The value to compare our subject to
+		 * @return Assertion The original assertion for method chaining
+		 */
+		public function is($value)
+		{
+			$result   = $this->resolve();
+			$modifier = NULL;
+
+			if (func_num_args() == 2) {
+				$modifier = func_get_arg(0);
+				$value    = func_get_arg(1);
+			}
+
+			if (!self::compareReduced($result, $modifier, $value)) {
+				throw new \Exception(sprintf(
+					'Assertion failed, value %s is not %s to %s',
+					$this->formatValue($result),
+					$modifier ? ($modifier === TRUE ? 'exactly equal' : $modifier) : 'equal',
+					$this->formatValue($value)
+				));
+			}
+
+			return $this;
+		}
+
+
+		/**
 		 * Asserts that the length/size of the result measures to a certain number
 		 *
 		 * @access public
@@ -435,15 +518,7 @@
 			}
 
 			if (isset($length)) {
-				switch ($modifier) {
-					case GT:  $condition = $length >  $size; break;
-					case LT:  $condition = $length <  $size; break;
-					case GTE: $condition = $length >= $size; break;
-					case LTE: $condition = $length <= $size; break;
-					default:  $condition = $length == $size; break;
-				}
-
-				if (!$condition) {
+				if (!self::compareReduced($length, $modifier, $size)) {
 					throw new \Exception(sprintf(
 						'Assertion failed, value %s measures %d instead of %s%d',
 						$this->formatValue($result),
@@ -606,7 +681,7 @@
 		 */
 		private function loadArray()
 		{
-			$this->isArray           = TRUE;
+			$this->isArray = TRUE;
 		}
 
 

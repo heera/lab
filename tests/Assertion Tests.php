@@ -54,6 +54,13 @@
 
 				assert('abcd')->measures(GTE, 3);
 				assert('abcd')->measures(LTE, 5);
+
+				assert(5)->is(GT, 4);
+				assert(4)->is(4);
+				assert(6)->is(LTE, 6);
+				assert(7)->is(EXACTLY, 7);
+				assert(NULL)->is(FALSE);
+				assert(TRUE)->is('non-empty string');
 			},
 
 			//
@@ -64,6 +71,7 @@
 				assert(function(){ return 1; })->equals(1, TRUE);
 				assert(function(){ return 'test'; })->measures(4);
 			},
+
 
 			//
 			// Negated assertions make sure our simple assertions will throw exceptions if they're
@@ -81,6 +89,10 @@
 
 				assert(function(){ assert('abcd')->measures(GTE, 5);  })->throws('Exception');
 				assert(function(){ assert('abcd')->measures(LTE, 3);  })->throws('Exception');
+
+				assert(function(){ assert(TRUE)->is(EXACTLY, '1');    })->throws('Exception');
+				assert(function(){ assert(2+2)->is(5);                })->throws('Exception');
+				assert(function(){ assert(6)->is(GT, '10');           })->throws('Exception');
 			},
 
 			//
@@ -125,7 +137,18 @@
 				;
 
 
-			}
+			},
+
+
+			//
+			//  Dumb Assertions
+			//
+
+			'Dumb Assertions' => function($data) {
+				assert('ltrim', TRUE)->equals('ltrim');
+				assert('Dotink\Lab\Calculator::$seed', TRUE)->measures(28);
+			},
+
 		]
 	];
 }

@@ -604,7 +604,7 @@
 					$this->formatValue($object)
 				));
 
-			} elseif (get_class($object) != $this->class) {
+			} elseif (!($object instanceof $this->class)) {
 				throw new \Exception(sprintf(
 					'Cannot assert "%s" using() object of class "%s"',
 					$this->value,

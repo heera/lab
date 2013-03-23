@@ -149,6 +149,57 @@
 				assert('Dotink\Lab\Calculator::$seed', TRUE)->measures(28);
 			},
 
+			//
+			// Contains
+			//
+
+			'Contains Assertions' => function($data) {
+				assert('This is a test string')->contains('test');
+				assert('This is a test string')->contains('Test', FALSE);
+
+				assert(function(){
+					assert('This is a test string')->contains('foo');
+				})->throws('Exception');
+
+				assert(function(){
+					assert('This is a test string')->contains('foo');
+				})->throws('Exception');
+
+				assert(function(){
+					assert('This is a test string')->contains('foo', FALSE);
+				})->throws('Exception');
+
+				assert(['a' => 'foo', 'b' => 'bar'])->contains('foo');
+
+				assert(function(){
+					assert(['a' => 'foo', 'b' => 'bar'])->contains('foobar');
+				})->throws('Exception');
+
+				assert(['a' => 'foo', 'b' => 'bar'])->has('b');
+
+				assert(function(){
+					assert(['a' => 'foo', 'b' => 'bar'])->has('c');
+				})->throws('Exception');
+			},
+
+			//
+			// Ends and Begins
+			//
+
+			'Ends and Begins Assertions' => function($data) {
+				assert('I have a merry band of brothers')
+					-> begins ('I have a')
+					-> ends   ('band of brothers');
+
+				assert(function(){
+					assert('I have a merry band of brothers')->begins('You have');
+				})->throws('Exception');
+
+				assert(function(){
+					assert('I have a merry band of brothers')->ends('group of brothers');
+				})->throws('Exception');
+			}
+
 		]
 	];
 }

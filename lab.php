@@ -1,6 +1,7 @@
 <?php namespace Dotink\Lab {
 
 	use Exception;
+	use InvalidArgumentException;
 	use stdClass;
 
 	//
@@ -63,9 +64,18 @@
 	}
 
 	/**
-	 * An array of errors collected during the running of the script.
+	 * An array of PHP errors collected during the running of the script.
+	 *
+	 * @var array
 	 */
 	$errors = array();
+
+	/**
+	 * An array of Lab warnings collected during the running of the script
+	 *
+	 * @var array
+	 */
+	$warnings = array();
 
 
 	/**
@@ -153,6 +163,19 @@
 
 
 	/**
+	 * A simple rejection wrapper
+	 *
+	 * @param mixed $value The value to perform rejection on
+	 * @param boolean $raw The option to treat the value as non-parseable, default FALSE
+	 * @return Rejection A rejection object
+	 */
+	function reject($value, $raw = FALSE)
+	{
+		return new Rejection($value, $raw);
+	}
+
+
+	/**
 	 * Gets the configuration for the system, also since it uses needs we can catch the syntax
 	 * error and pretty print it special just for our config!
 	 *
@@ -190,18 +213,25 @@
 	function get_detail(Exception $e)
 	{
 		$trace  = $e->getTrace();
+		$depth  = get_class($e) == 'InvalidArgumentException'
+			? 5
+			: 0;
 
 		return [
-			'Context' => isset($trace[0]['class'])
-				? $trace[0]['class'] . '::' . $trace[0]['function']
-				: $trace[0]['function'],
+			'Context' => isset($trace[$depth]['class'])
+				? $trace[$depth]['class'] . '::' . (
+					$trace[$depth]['function'] == '__call'
+						? $trace[$depth]['args'][0]
+						: $trace[$depth]['function']
+				)
+				: $trace[$depth]['function'],
 
-			'File' => isset($trace[0]['file'])
-				? $trace[0]['file']
+			'File' => isset($trace[$depth]['file'])
+				? $trace[$depth]['file']
 				: $e->getFile(),
 
-			'Line' => isset($trace[0]['line'])
-				? $trace[0]['line']
+			'Line' => isset($trace[$depth]['line'])
+				? $trace[$depth]['line']
 				: $e->getLine()
 		];
 	}
@@ -264,7 +294,7 @@
 	 *
 	 * @return void
 	 */
-	call_user_func(function() use($argv, &$errors)
+	call_user_func(function() use($argv, &$errors, &$warnings)
 	{
 		//
 		// Include supporting files
@@ -286,6 +316,7 @@
 			}
 
 			needs(__DIR__ . '/src/Assertion.php');
+			needs(__DIR__ . '/src/Rejection.php');
 
 		} catch (Exception $e) {
 			echo _('Broken install: ', 'red') . $e->getMessage();
@@ -351,7 +382,7 @@
 				}
 			}
 
-			echo _('ALL TESTS PASSING', 'yellow') . LB;
+			echo _('ALL TESTS PASSING', 'light_cyan') . LB;
 
 			exit(0);
 		}
@@ -395,26 +426,38 @@
 		if (isset($test_file['tests']) && is_array($test_file['tests'])) {
 			foreach ($test_file['tests'] as $message => $test) {
 				if ($test instanceof \Closure) {
-					echo TAB . ' - ' . $message . ' ';
+					echo TAB . '- ' . $message . ' ';
 
 					try {
 						call_user_func($test, $data, $shared);
 						echo '[' . _('PASS', 'green') . ']' . LB;
 
 					} catch (Exception $e) {
-						echo '[' . _('FAIL', 'red')   . ']' . LB;
-						echo LB;
-						echo $e->getMessage() . LB;
-						echo LB;
+						if (get_class($e) == 'InvalidArgumentException') {
+							echo '[' . _('INVALID TEST', 'yellow') . ']' . LB;
+						} else {
+							echo '[' . _('FAIL', 'red') . ']' . LB;
+						}
+
+						echo TAB . LB;
+						echo TAB . $e->getMessage() . LB;
+						echo TAB . LB;
+
 						foreach (get_detail($e) as $type => $value) {
-							echo _(str_pad($type . ':', 10, ' '), 'cyan') . $value . LB;
+							echo TAB . _(str_pad('  ' . $type . ':', 10, ' '), 'cyan') . $value . LB;
 						}
+
 						echo LB;
-						echo 'PHP Errors (' . count($errors) . ')' . LB;
-						foreach ($errors as $error) {
-							echo LB . $error;
+
+						if (get_class($e) == 'Exception') {
+							echo 'PHP Errors (' . count($errors) . ')' . LB;
+
+							foreach ($errors as $error) {
+								echo LB . $error;
+							}
+
+							exit(-1);
 						}
-						exit(-1);
 					}
 				}
 			}

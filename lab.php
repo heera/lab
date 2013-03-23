@@ -1,6 +1,7 @@
 <?php namespace Dotink\Lab {
 
 	use Exception;
+	use stdClass;
 
 	//
 	// Useful shorthand constants
@@ -334,6 +335,7 @@
 		}
 
 		$data      = $config['data'];
+		$shared    = new stdClass();
 		$file_path = str_replace($tests_directory . DS, '', $argv[2]);
 
 		try {
@@ -350,11 +352,11 @@
 		//
 		try {
 			if (isset($config['setup']) && $config['setup'] instanceof \Closure) {
-				call_user_func($config['setup'], $config['data']);
+				call_user_func($config['setup'], $config['data'], $shared);
 			}
 
 			if (isset($test_file['setup']) && $test_file['setup'] instanceof \Closure) {
-				call_user_func($test_file['setup'], $config['data']);
+				call_user_func($test_file['setup'], $config['data'], $shared);
 			}
 
 		} catch (Exception $e) {
@@ -373,7 +375,7 @@
 					echo TAB . ' - ' . $message . ' ';
 
 					try {
-						call_user_func($test, $data);
+						call_user_func($test, $data, $shared);
 						echo '[' . _('PASS', 'green') . ']' . LB;
 
 					} catch (Exception $e) {
@@ -401,11 +403,11 @@
 
 		try {
 			if (isset($test_file['cleanup']) && $test_file['cleanup'] instanceof \Closure) {
-				call_user_func($test_file['cleanup'], $config['data']);
+				call_user_func($test_file['cleanup'], $config['data'], $shared);
 			}
 
 			if (isset($config['cleanup']) && $config['cleanup'] instanceof \Closure) {
-				call_user_func($config['cleanup'], $config['data']);
+				call_user_func($config['cleanup'], $config['data'], $shared);
 			}
 
 		} catch (Exception $e) {

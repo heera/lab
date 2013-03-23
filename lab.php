@@ -37,13 +37,17 @@
 	const REGEX_PARSE_ERROR   = '#PHP Parse error\:  (.*) in (.*) on line (\d+)#i';
 
 	//
+	// We'll do the error printing, k thankz bye!
+	//
+
+	ini_set('display_errors', 0);
+	ini_set('display_startup_errors', 0);
+
+	//
 	// Print our our label if we're the parent
 	//
 
 	if (!isset($argv[2])) {
-		ini_set('display_errors', 0);
-		ini_set('display_startup_errors', 0);
-
 		$banner = (
 			' _        _    ____          _   ___  ' . LB .
 			'| |      / \  | __ )  __   _/ | / _ \ ' . LB .
@@ -56,19 +60,6 @@
 		echo _($banner, 'dark_gray') . LB;
 		echo LB;
 		echo LB;
-	}
-
-	//
-	// Include supporting files
-	//
-
-	try {
-		needs(__DIR__ . '/parody/src/Load.php');
-		needs(__DIR__ . '/src/Assertion.php');
-	} catch (Exception $e) {
-		echo _('Broken install: ', 'red') . $e->getMessage();
-		echo LB;
-		exit(-1);
 	}
 
 	/**
@@ -275,6 +266,37 @@
 	 */
 	call_user_func(function() use($argv, &$errors)
 	{
+		//
+		// Include supporting files
+		//
+
+		try {
+			if (is_dir(__DIR__ . '/parody/src/')) {
+
+				foreach (['Quip', 'Mime'] as $class) {
+					include __DIR__ . '/parody/src/' . $class . '.php';
+
+					if (!class_exists('Dotink\\Parody\\' . $class)) {
+						throw new Exception(sprintf(
+							'Parody appears to be installed, but we cannot find %s',
+							$class
+						));
+					}
+				}
+			}
+
+			needs(__DIR__ . '/src/Assertion.php');
+
+		} catch (Exception $e) {
+			echo _('Broken install: ', 'red') . $e->getMessage();
+			echo LB;
+			exit(-1);
+		}
+
+		//
+		// Test loading
+		//
+
 		$directory = isset($argv[1]) && is_dir($argv[1])
 			? rtrim($argv[1], '\\/' . DS)
 			: getcwd();
@@ -350,6 +372,7 @@
 		//
 		// Setup
 		//
+
 		try {
 			if (isset($config['setup']) && $config['setup'] instanceof \Closure) {
 				call_user_func($config['setup'], $config['data'], $shared);

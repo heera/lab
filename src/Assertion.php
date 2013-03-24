@@ -944,7 +944,7 @@
 		 * Formats a type
 		 *
 		 * @access private
-		 * @param mixed A value whose formatted type we want
+		 * @param mixed $value A value whose formatted type we want
 		 * @return string The formatted type
 		 */
 		private function formatType($value)

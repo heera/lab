@@ -4,7 +4,12 @@
 	use InvalidArgumentException;
 
 	/**
-	 * A simple assertion library
+	 * A simple rejection library
+	 *
+	 * This class is essentially a proxy class for Assertion.  That is to say, you should expect
+	 * that any publically accessible methods available on Assertion are available on this class
+	 * and follow the same API.  The *only* difference between Assertion and this class is that
+	 * Assertion makes positive claims and this class makes negative claims.
 	 *
 	 * @copyright Copyright (c) 2013, Matthew J. Sahagian
 	 * @author Matthew J. Sahagian [mjs] <msahagian@dotink.org>
@@ -18,7 +23,12 @@
 		private $assertion = NULL;
 
 		/**
+		 * Create a new rejection
 		 *
+		 * @access public
+		 * @param mixed $value The subject of our assertion
+		 * @param boolean $raw Whether we should attempt anything smart on $value, default FALSE
+		 * @return void
 		 */
 		public function __construct($value, $raw = FALSE)
 		{
@@ -26,7 +36,16 @@
 		}
 
 		/**
+		 * Proxies methods to our internal assertion
 		 *
+		 * If the method called is actually one of the assertion methods, such as `equals()` or
+		 * `has()`, for example, then this method will wrap the assertion and ensure it throws
+		 * an exception, thereby asserting the opposite, or, rejecting.
+		 *
+		 * @access public
+		 * @param string $method The method called
+		 * @param array $args The arguments passed
+		 * @return Rejection The Rejeciton object for method chaining
 		 */
 		public function __call($method, $args)
 		{

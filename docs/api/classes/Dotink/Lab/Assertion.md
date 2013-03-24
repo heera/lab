@@ -8,6 +8,32 @@ _Please reference the LICENSE.md file at the root of this distribution_
 
 `Dotink\Lab`
 
+#### Imports
+
+<table>
+
+	<tr>
+		<th>Alias</th>
+		<th>Namespace / Class</th>
+	</tr>
+	
+	<tr>
+		<td>Exception</td>
+		<td>Exception</td>
+	</tr>
+	
+	<tr>
+		<td>InvalidArgumentException</td>
+		<td>InvalidArgumentException</td>
+	</tr>
+	
+	<tr>
+		<td>Closure</td>
+		<td>Closure</td>
+	</tr>
+	
+</table>
+
 #### Authors
 
 <table>
@@ -43,6 +69,10 @@ Arguments held for callable assertions
 #### <span style="color:#6a6e3d;">$class</span>
 
 The class for the currently asserted method, property, or object
+
+#### <span style="color:#6a6e3d;">$exception</span>
+
+The most recent exception thrown - can be analyzed with `analyzeException()`
 
 #### <span style="color:#6a6e3d;">$isClass</span>
 
@@ -82,13 +112,23 @@ Whether not the assertion is a string
 
 #### <span style="color:#6a6e3d;">$method</span>
 
+The method for a class or object we're asserting on
+
 #### <span style="color:#6a6e3d;">$needsObject</span>
 
 Whether or not the assertion needs an object (such as for object methods/properties)
 
 #### <span style="color:#6a6e3d;">$object</span>
 
+The object we're asserting on
+
 #### <span style="color:#6a6e3d;">$property</span>
+
+The property for a class or object we're asserting on
+
+#### <span style="color:#6a6e3d;">$success</span>
+
+The success message if the assertion was successful
 
 #### <span style="color:#6a6e3d;">$type</span>
 
@@ -219,6 +259,71 @@ Create a new assertion, this will determine much about the nature of our value
 		</dt>
 		<dd>
 			Provides no return value.
+		</dd>
+	
+</dl>
+
+
+<hr />
+
+#### <span style="color:#3e6a6e;">alertSuccess()</span>
+
+Gets the last success message posted
+
+###### Returns
+
+<dl>
+	
+		<dt>
+			string
+		</dt>
+		<dd>
+			The last success message posted, FALSE if nothing has succeeded
+		</dd>
+	
+</dl>
+
+
+<hr />
+
+#### <span style="color:#3e6a6e;">analyzeException()</span>
+
+Allows user to analyze an exception thrown in a test using a callback
+
+###### Parameters
+
+<table>
+	<thead>
+		<th>Name</th>
+		<th>Type(s)</th>
+		<th>Description</th>
+	</thead>
+	<tbody>
+			
+		<tr>
+			<td>
+				$callback
+			</td>
+			<td>
+									callable				
+			</td>
+			<td>
+				The callback to analyze the exception (passed as first arg)
+			</td>
+		</tr>
+			
+	</tbody>
+</table>
+
+###### Returns
+
+<dl>
+	
+		<dt>
+			mixed
+		</dt>
+		<dd>
+			The return value of the callback
 		</dd>
 	
 </dl>
@@ -928,6 +1033,143 @@ All the requisite logic for loading an object assertion
 		</dt>
 		<dd>
 			Provides no return value.
+		</dd>
+	
+</dl>
+
+
+<hr />
+
+#### <span style="color:#3e6a6e;">formatArray()</span>
+
+Formats an array
+
+###### Parameters
+
+<table>
+	<thead>
+		<th>Name</th>
+		<th>Type(s)</th>
+		<th>Description</th>
+	</thead>
+	<tbody>
+			
+		<tr>
+			<td>
+				$value
+			</td>
+			<td>
+									<a href="http://www.php.net/language.types.array.php">array</a>
+				
+			</td>
+			<td>
+				The array to be formatted
+			</td>
+		</tr>
+			
+	</tbody>
+</table>
+
+###### Returns
+
+<dl>
+	
+		<dt>
+			string
+		</dt>
+		<dd>
+			The formatted array
+		</dd>
+	
+</dl>
+
+
+<hr />
+
+#### <span style="color:#3e6a6e;">formatCallable()</span>
+
+Formats a Callable
+
+###### Parameters
+
+<table>
+	<thead>
+		<th>Name</th>
+		<th>Type(s)</th>
+		<th>Description</th>
+	</thead>
+	<tbody>
+			
+		<tr>
+			<td>
+				$value
+			</td>
+			<td>
+									callable				
+			</td>
+			<td>
+				The callable to be formatted
+			</td>
+		</tr>
+			
+	</tbody>
+</table>
+
+###### Returns
+
+<dl>
+	
+		<dt>
+			string
+		</dt>
+		<dd>
+			The formatted callable
+		</dd>
+	
+</dl>
+
+
+<hr />
+
+#### <span style="color:#3e6a6e;">formatType()</span>
+
+Formats a type
+
+###### Parameters
+
+<table>
+	<thead>
+		<th>Name</th>
+		<th>Type(s)</th>
+		<th>Description</th>
+	</thead>
+	<tbody>
+			
+		<tr>
+			<td>
+				$value
+			</td>
+			<td>
+									<a href="http://www.php.net/language.pseudo-types.php">mixed</a>
+				
+			</td>
+			<td>
+				A value whose formatted type we want
+			</td>
+		</tr>
+			
+	</tbody>
+</table>
+
+###### Returns
+
+<dl>
+	
+		<dt>
+			string
+		</dt>
+		<dd>
+			The formatted type
 		</dd>
 	
 </dl>

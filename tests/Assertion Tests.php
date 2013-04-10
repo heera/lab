@@ -45,6 +45,7 @@
 			//
 
 			'Simple Assertions' => function($data) {
+
 				assert(1+1)->equals(2);
 				assert(NULL)->equals(FALSE);
 

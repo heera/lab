@@ -442,25 +442,23 @@
 						}
 
 						echo TAB . LB;
-						echo TAB . $e->getMessage() . LB;
+						echo TAB . implode(LB . TAB, explode(LB, $e->getMessage())) . LB;
 						echo TAB . LB;
 
 						foreach (get_detail($e) as $type => $value) {
-							echo TAB . _(str_pad('  ' . $type . ':', 10, ' '), 'cyan') . $value . LB;
+							echo TAB . _(str_pad('  ' . $type . ':', 12, ' '), 'cyan') . $value . LB;
 						}
 
 						echo LB;
 
-						if (get_class($e) == 'Exception') {
-							echo 'PHP Errors (' . count($errors) . ')' . LB;
+						echo 'PHP Errors (' . count($errors) . ')' . LB;
 
-							foreach ($errors as $error) {
-								echo LB . $error;
-							}
-
-							$failed = TRUE;
-							break;
+						foreach ($errors as $error) {
+							echo LB . $error;
 						}
+
+						$failed = TRUE;
+						break;
 					}
 				}
 			}

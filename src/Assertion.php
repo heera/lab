@@ -676,6 +676,9 @@
 				? [$class]
 				: $class;
 
+			foreach ($classes as $i => $class) {
+				$classes[$i] = ltrim($class, '\\');
+			}
 
 			if (!($this->isMethod || $this->isFunction || $this->isClosure)) {
 				throw new InvalidArgumentException(sprintf(

@@ -563,6 +563,38 @@
 
 
 		/**
+		 * Determines if an object is an instance of a certain class
+		 *
+		 */
+		public function isInstanceOf($class, $modifier = NULL)
+		{
+			$result = $this->resolve();
+
+			if (!is_object($result)) {
+				throw new Exception(sprintf(
+					'Assertion Failed: Value %s is not an object',
+					$this->formatValue($result)
+				));
+			}
+
+			if ($modifier == EXACTLY && get_class($result) != ltrim($class, '\\')) {
+				throw new Exception(sprintf(
+					'Assertion Failed: Value has a class of %s, not %s',
+					get_class($result),
+					$class
+				));
+
+			} elseif (!($result instanceof $class))  {
+				throw new Exception(sprintf(
+					'Assertion Failed: Value is an instance of %s, not %s',
+					get_class($result),
+					$class
+				));
+			}
+		}
+
+
+		/**
 		 * A more flexible pseudonym for equals() that allows for more complex comparisons
 		 *
 		 * When used with a single argument, this method provides very similar functionality to

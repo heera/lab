@@ -423,6 +423,8 @@
 		// Run Tests
 		//
 
+		$failed = FALSE;
+
 		if (isset($test_file['tests']) && is_array($test_file['tests'])) {
 			foreach ($test_file['tests'] as $message => $test) {
 				if ($test instanceof \Closure) {
@@ -456,7 +458,8 @@
 								echo LB . $error;
 							}
 
-							exit(-1);
+							$failed = TRUE;
+							break;
 						}
 					}
 				}
@@ -479,9 +482,9 @@
 		} catch (Exception $e) {
 			echo _('Cleanup Failed: ', 'red');
 			echo $e->getMessage();
-			exit(-1);
+			exit(-2);
 		}
 
-		exit(0);
+		exit($failed ? -1 : 0);
 	});
 }

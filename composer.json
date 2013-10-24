@@ -2,7 +2,7 @@
 	"name": "dotink/lab",
 	"description": "A 'stupid' test framework",
 	"keywords": ["testing","mock"],
-	"license": "AGPL",
+	"license": "AGPL-3.0",
 	"authors": [
 		{
 			"name": "Matthew J. Sahagian",

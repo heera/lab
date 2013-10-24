@@ -335,10 +335,10 @@
 		for (
 			$config_path  = realpath($directory);
 
-			$config_path != realpath($config_path . DS . '..')
-			&& !is_readable($config_path . DS . 'lab.config');
+			!is_readable($config_path . DS . 'lab.config')
+			&& $config_path != realpath($config_path . DS . '..');
 
-			$config_path  = realpath($config_path . DS . '..')
+			$config_path = realpath($config_path . DS . '..')
 		);
 
 		if ($config_path == realpath($config_path . DS . '..')) {

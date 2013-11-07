@@ -22,6 +22,8 @@
 	const LTE     = '<=';
 	const EXACTLY = '===';
 
+	const NOT     = '!=';
+
 
 	//
 	// Constants for conditional operations

@@ -808,7 +808,6 @@
 		}
 
 
-
 		/**
 		 * Checks whether or not an assertion requiring an object needs ones.
 		 *

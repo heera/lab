@@ -108,8 +108,12 @@
 	register_shutdown_function(function() {
 		echo LB;
 
+		$error_types_handled = array(
+			E_ERROR, E_PARSE, E_COMPILE_ERROR
+		);
+
 		if ($error = error_get_last()) {
-			if ($error['type'] == E_ERROR || $error['type'] == E_PARSE) {
+			if (in_array($error['type'], $error_types_handled)) {
 				echo LB;
 				echo _('Fatal error:', 'red') . ' ' . $error['message'] . _(' @ ', 'green');
 				echo _($error['file'] . '#' . $error['line'], 'yellow');

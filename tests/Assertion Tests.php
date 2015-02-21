@@ -1,5 +1,8 @@
 <?php namespace Dotink\Lab
 {
+
+	use Dotink\Parody;
+
 	return [
 
 		//
@@ -9,6 +12,7 @@
 
 		'setup' => function($data) {
 
+			
 			//
 			// A stupid calculator class
 			//

@@ -307,20 +307,6 @@
 		//
 
 		try {
-			if (is_dir(__DIR__ . '/parody/src/')) {
-
-				foreach (['Quip', 'Mime'] as $class) {
-					include __DIR__ . '/parody/src/' . $class . '.php';
-
-					if (!class_exists('Dotink\\Parody\\' . $class)) {
-						throw new Exception(sprintf(
-							'Parody appears to be installed, but we cannot find %s',
-							$class
-						));
-					}
-				}
-			}
-
 			needs(__DIR__ . '/src/Assertion.php');
 			needs(__DIR__ . '/src/Rejection.php');
 

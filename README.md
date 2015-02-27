@@ -1,6 +1,9 @@
 # Lab
 
-Lab is a concise and direct testing framework that isolates testing contexts, class interaction, etc.  It is simple to use and very direct.  It works well with [Parody](http://www.github.com/dotink/parody) to provide much of the same testing capacity as more complex frameworks with a sweeter API and overall simpler approach.
+Lab is a concise and direct testing framework that isolates testing contexts, class interaction,
+etc.  It is simple to use and very direct.  It works well with
+[Parody](http://www.github.com/dotink/parody) to provide much of the same testing capacity as more
+complex frameworks with a sweeter API and overall simpler approach.
 
 [![Build Status](https://travis-ci.org/dotink/Lab.png?branch=master)](https://travis-ci.org/dotink/Lab)
 
@@ -16,8 +19,8 @@ Once you have lab installed, getting started is easy!
 
 ```bash
 cd <path to project>
-cp <path to lab>/lab.config ./lab.config
-mkdir tests
+cp ~/.composer/vendor/dotink/lab.config ./lab.config
+mkdir -p test/routines
 ```
 
 You can now run lab for the first time
@@ -26,7 +29,9 @@ You can now run lab for the first time
 
 ### Adding a Test Set and Tests
 
-To add a set of tests to Lab you can create a file in the tests folder with the name of the test set you want.  Unlike other testing frameworks, this file is a simple PHP file that just returns an array.  Let's add the following template to a file called `Example Tests.php`:
+To add a set of tests to Lab you can create a file in the tests folder with the name of the test
+set you want.  Unlike other testing frameworks, this file is a simple PHP file that just returns an
+array.  Let's add the following template to a file called `Example Tests.php`:
 
 ```php
 <?php namespace Dotink\Lab
@@ -50,7 +55,11 @@ We can now re-run Lab and see our first test result:
 
 ### Making an Assertion
 
-Each test will make one or more assertion.  Lab provides an `Assertion` class which can be used to make assertions, however, you can use a third party library or basic PHP code if you prefer.  Regardless of how you make assertions, a test will fail in Lab whenever an uncaught exception is thrown.  Let's examine this with a basic assertion using the Lab `assert` function which will create a new instance of the build in `Assertion` class.
+Each test will make one or more assertion.  Lab provides an `Assertion` class which can be used to
+make assertions, however, you can use a third party library or basic PHP code if you prefer.
+Regardless of how you make assertions, a test will fail in Lab whenever an uncaught exception is
+thrown.  Let's examine this with a basic assertion using the Lab `assert` function which will
+create a new instance of the build in `Assertion` class.
 
 ```php
 <?php namespace Dotink\Lab
@@ -68,13 +77,18 @@ Each test will make one or more assertion.  Lab provides an `Assertion` class wh
 }
 ```
 
-This time, when we rerunning Lab, we see the failure immediately as well as some information regarding the failure:
+This time, when we rerunning Lab, we see the failure immediately as well as some information
+regarding the failure:
 
 ![Lab with a failing assertion](https://dl.dropbox.com/u/31068853/Images/Dotink%20Lab/lab-first_assertion.png)
 
 #### "Smart" Assertions
 
-The `Assertion` class is designed to provide features for the 90% of test cases you will need to run with a concise and flexible syntax.  Part of its convenience is how it parses string input and attempts to determine whether or not the string represents another piece of code, for example, a class method, a property, or a function.  The following two lines of code are, for the most part, equivalent:
+The `Assertion` class is designed to provide features for the 90% of test cases you will need to
+run with a concise and flexible syntax.  Part of its convenience is how it parses string input and
+attempts to determine whether or not the string represents another piece of code, for example, a
+class method, a property, or a function.  The following two lines of code are, for the most part,
+equivalent:
 
 ```php
 assert(ltrim('test', 't'))->equals('est', TRUE);
@@ -84,7 +98,10 @@ assert('ltrim')->with('test', 't')->equals('est');
 
 ##### Multiple Assertions
 
-Although each of the above will do the exact same comparison to assert equal values, the second benefits in two ways.  Firstly, by providing a function, method, or property name to `assert()` directly, it is  possible to run multiple assertions over a single method without repeating the actual method name:
+Although each of the above will do the exact same comparison to assert equal values, the second
+benefits in two ways.  Firstly, by providing a function, method, or property name to `assert()`
+directly, it is  possible to run multiple assertions over a single method without repeating the
+actual method name:
 
 ```php
 assert('ltrim')
@@ -101,7 +118,9 @@ assert('ltrim')
 
 ##### Testing Private/Protected
 
-In addition to running multiple assertions easily, using a "smart" assertions allows you to access `private` and `protected` methods and properties.  Let's use the following absolutely useless class to illustrate this:
+In addition to running multiple assertions easily, using a "smart" assertions allows you to access
+`private` and `protected` methods and properties.  Let's use the following absolutely useless class
+to illustrate this:
 
 ```php
 class Adder
@@ -120,7 +139,8 @@ class Adder
 }
 ```
 
-Using the class above we can easily do the following assertions despite that the `add` method is not publicly visible:
+Using the class above we can easily do the following assertions despite that the `add` method is
+not publicly visible:
 
 ```php
 assert('Adder::add')
@@ -146,11 +166,17 @@ assert('Adder::$seed')
 ;
 ```
 
-The above code also shows how we can call the `using` method to specify on which object we want to access the property or method.  This allows us to easily test a number of objects which may have been instantiated differently to ensure that behavior is consistent across a wider number of cases.
+The above code also shows how we can call the `using` method to specify on which object we want to
+access the property or method.  This allows us to easily test a number of objects which may have
+been instantiated differently to ensure that behavior is consistent across a wider number of cases.
 
 ### Fixtures
 
-It is important to understand that each test set / file which is added to Lab will run in a completely separate execution of PHP.  Although we recommend organizing test sets per fixture, you can create separate fixture includes and add them across multiple test sets if need be.  In all cases, anything you need to do to prepare your testing environment or create data to test against should be added to the `setup` key in the test set array:
+It is important to understand that each test set / file which is added to Lab will run in a
+completely separate execution of PHP.  Although we recommend organizing test sets per fixture, you
+can create separate fixture includes and add them across multiple test sets if need be.  In all
+cases, anything you need to do to prepare your testing environment or create data to test against
+should be added to the `setup` key in the test set array:
 
 ```php
 <?php namespace Dotink\Lab
@@ -167,7 +193,10 @@ It is important to understand that each test set / file which is added to Lab wi
 }
 ```
 
-If you have any setup that is required across **all** test sets / files, then you can add that logic to the `lab.config` file in the closure referenced by the same key name.  Similarly you will also find a `cleanup` key there which can be used for global cleanup code as well as added to each separate test set for specific cleanup code:
+If you have any setup that is required across **all** test sets / files, then you can add that
+logic to the `lab.config` file in the closure referenced by the same key name.  Similarly you
+will also find a `cleanup` key there which can be used for global cleanup code as well as added
+to each separate test set for specific cleanup code:
 
 ```php
 //
@@ -182,9 +211,14 @@ If you have any setup that is required across **all** test sets / files, then yo
 
 ### Custom Configuration Data
 
-By now you may have realized that every closure either in the `lab.config` file or in a test set takes in a `$data` parameter.  You may have also noted the `data` key in the `lab.config` which points to an array.  By default this array contains only a `root` key which points to the directory where the `lab.config` file is found.
+By now you may have realized that every closure either in the `lab.config` file or in a test set
+takes in a `$data` parameter.  You may have also noted the `data` key in the `lab.config` which
+points to an array.  By default this array contains only a `root` key which points to the directory
+where the `lab.config` file is found.
 
-You can add any arbitrary pieces of information you might need on a per test / setup / or cleanup basis to this array.  Or use the provided root, for example, to load your classes using the `needs` function:
+You can add any arbitrary pieces of information you might need on a per test / setup / or cleanup
+basis to this array.  Or use the provided root, for example, to load your classes using the `needs`
+function:
 
 ```php
 'setup' => function($data) {
@@ -194,32 +228,23 @@ You can add any arbitrary pieces of information you might need on a per test / s
 
 ### Dependencies
 
-The `needs` function, as seen in code above, provides a clean way to require your source files with the nicely formatted output of Lab:
+The `needs` function, as seen in code above, provides a clean way to require your source files with
+the nicely formatted output of Lab:
 
 ![Lab with a failing needs](https://dl.dropbox.com/u/31068853/Images/Dotink%20Lab/lab-failed_needs.png)
 
-You may be, however, otherwise tempted to throw an autoloader or something similar in your `setup` function(s).  While this is 100% possible, you'll need to set the `disable_autoloading` to `FALSE` in the `lab.config` file.  If this is set to `TRUE` (default), Lab will register an autoloader almost immediately which will prevent (by throwing an Exception) classes from being loaded in that manner.  This is to reduce the chance that an unknown or unseen dependency will cause your unit tests to become something more like integration tests.
-
-Aside from a few edge cases where not suitable, Lab will look for and include the [Parody](http://www.github.com/dotink/parody) submodule if it exists.  Parody is a flexible mimicking library which can build dynamic runtime-configurable classes to match your static / object dependencies.  Unlike traditional mock object libraries, Parody does not extend and overload classes, nor does it use reflection to try and manipulate them into meeting your expecations.  Instead, Parody assumes the strict context of a framework like Lab and *builds a class in the same exact namespace and with the same exact name as your dependency*.
-
-We suggest you check out [Parody's github repo](http://www.github.com/dotink/parody) for more information, but for now, here's a quick example of how it could mimic our `Adder` class if we were statically dependent on it in another class:
-
-```php
-Mime::define('Adder');
-
-Mime::create('Adder')->onNew('3', function($mime) {
-	$mime->onCall('add')->expect(2)->give(5);
-	$mime->onGet('seed')->give(3);
-});
-```
-
-In short, the above defines our `Adder` class, creates it, then specifies that when a new `Adder` is instantiated with an argument of `3` we should return `5` if we receive a call to `add` with an argument of `2`, or give `3` if an attempt is made to get the `seed` property.
-
-*Note: It is likely not possible (we haven't tried) to make assertions on a mimicked class, at least certainly not using "smart" assertions.*
+You may be, however, otherwise tempted to throw an autoloader or something similar in your `setup`
+function(s).  While this is 100% possible, you'll need to set the `disable_autoloading` to `FALSE`
+in the `lab.config` file.  If this is set to `TRUE` (default), Lab will register an autoloader
+almost immediately which will prevent (by throwing an Exception) classes from being loaded in that
+manner.  This is to reduce the chance that an unknown or unseen dependency will cause your unit
+tests to become something more like integration tests.
 
 ## Conclusion
 
-Lab is an easy-to-use, quick-to-set-up, and generally fun testing framework.  Combined with Parody it represents a powerful tool for PHP testing which encompasses a lot of best practices with regards to testing, including by not limited to:
+Lab is an easy-to-use, quick-to-set-up, and generally fun testing framework.  Combined with
+Parody it represents a powerful tool for PHP testing which encompasses a lot of best practices
+with regards to testing, including by not limited to:
 
 - Simple, clear, and expressive API (limits mistakes in tests themselves)
 - High degree of code isolation (disabling autoloading by default, explicit needs or mimicking)

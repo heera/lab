@@ -14,11 +14,8 @@
 		"php": ">=5.4.0"
 	},
 	"bin": [
-		"lab.php"
+		"bin/lab.php"
 	],
-	"config": {
-		"bin-dir": "bin"
-	},
 	"suggest": {
 		"dotink/parody": "A simple PHP testing library for defining and crafting mock classes and objects."
 	},

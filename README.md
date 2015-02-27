@@ -1,13 +1,13 @@
 # Lab
 
-Lab is a stupid test "framework" that works well with [Parody](http://www.github.com/dotink/parody) (and includes it by default) to provide much of the same testing capacity as more complex frameworks.
+Lab is a concise and direct testing framework that isolates testing contexts, class interaction, etc.  It is simple to use and very direct.  It works well with [Parody](http://www.github.com/dotink/parody) to provide much of the same testing capacity as more complex frameworks with a sweeter API and overall simpler approach.
 
 [![Build Status](https://travis-ci.org/dotink/Lab.png?branch=master)](https://travis-ci.org/dotink/Lab)
 
 ## Installation
 
 ```bash
-git clone --recursive https://github.com/dotink/Lab.git <path where you want to install lab>
+git clone https://github.com/dotink/lab.git 
 ```
 
 ## Basic Usage

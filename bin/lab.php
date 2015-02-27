@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php namespace Dotink\Lab {
 
 	use Exception;
@@ -307,8 +308,8 @@
 		//
 
 		try {
-			needs(__DIR__ . '/src/Assertion.php');
-			needs(__DIR__ . '/src/Rejection.php');
+			needs(__DIR__ . '/../src/Assertion.php');
+			needs(__DIR__ . '/../src/Rejection.php');
 
 		} catch (Exception $e) {
 			echo _('Broken install: ', 'red') . $e->getMessage();

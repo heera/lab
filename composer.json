@@ -11,7 +11,8 @@
 		}
 	],
 	"require": {
-		"php": ">=5.4.0"
+		"php": ">=5.4.0",
+		"dotink/parody": "~1.0"
 	},
 	"suggest": {
 		"dotink/parody": "A simple PHP testing library for defining and crafting mock classes and objects."

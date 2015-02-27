@@ -1,6 +1,6 @@
 {
 	"name": "dotink/lab",
-	"description": "A 'stupid' test framework",
+	"description": "Lab is a concise and direct testing framework",
 	"keywords": ["testing","mock"],
 	"license": "AGPL-3.0",
 	"authors": [

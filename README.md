@@ -7,7 +7,7 @@ Lab is a concise and direct testing framework that isolates testing contexts, cl
 ## Installation
 
 ```bash
-git clone https://github.com/dotink/lab.git 
+composer global require dotink/lab
 ```
 
 ## Basic Usage
